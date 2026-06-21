@@ -5,3 +5,6 @@ mpvnet/settings.xml
 mpvnet/inactive/
 mpvnet/shaders/
 mpvnet/playlists/
+
+PowerShell/Modules/
+PowerShell/Scripts/
