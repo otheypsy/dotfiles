@@ -8,3 +8,6 @@ mpvnet/playlists/
 
 PowerShell/Modules/
 PowerShell/Scripts/
+
+vscode/User/
+!vscode/User/settings.json
