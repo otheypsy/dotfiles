@@ -1,0 +1,122 @@
+{
+    "git.autofetch": true,
+    "git.enableSmartCommit": true,
+    "workbench.tree.indent": 20,
+    "workbench.colorCustomizations": {
+        "activityBarBadge.background": "#FFA000",
+        "list.activeSelectionForeground": "#FFA000",
+        "list.inactiveSelectionForeground": "#FFA000",
+        "list.highlightForeground": "#FFA000",
+        "scrollbarSlider.activeBackground": "#FFA00050",
+        "editorSuggestWidget.highlightForeground": "#FFA000",
+        "textLink.foreground": "#FFA000",
+        "progressBar.background": "#FFA000",
+        "pickerGroup.foreground": "#FFA000",
+        "tab.activeBorder": "#FFA000",
+        "notificationLink.foreground": "#FFA000",
+        "editorWidget.resizeBorder": "#FFA000",
+        "editorWidget.border": "#FFA000",
+        "settings.modifiedItemIndicator": "#FFA000",
+        "settings.modifiedItemForeground": "#FFA000",
+        "settings.headerForeground": "#FFA000",
+        "panelTitle.activeBorder": "#FFA000",
+        "breadcrumb.activeSelectionForeground": "#FFA000",
+        "menu.selectionForeground": "#FFA000",
+        "menubar.selectionForeground": "#FFA000"
+    },
+    "window.zoomLevel": 1,
+    "editor.fontLigatures": true,
+    "editor.fontFamily": "'SpaceMono', 'Source Code Pro', 'Courier New', monospace",
+    "editor.fontSize": 15,
+    "editor.formatOnSave": true,
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[html]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.defaultFoldingRangeProvider": "esbenp.prettier-vscode",
+        "prettier.bracketSameLine": true,
+        "prettier.singleAttributePerLine": true
+    },
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[css]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true
+    },
+    "[lua]": {
+        "editor.defaultFormatter": "sumneko.lua",
+        "editor.formatOnSave": true
+    },
+    "Lua.format.defaultConfig": {
+        "indent_style": "space",
+        "indent_size": "4",
+        "quote_style": "double"
+    },
+    "workbench.preferredLightColorTheme": "Dark 2026",
+    "window.systemColorTheme": "dark",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "chat.editor.wordWrap": "on",
+    "notebook.output.wordWrap": true,
+    "editor.definitionLinkOpensInPeek": true,
+    "editor.wrapOnEscapedLineFeeds": false,
+    "terminal.integrated.env.windows": {},
+    "terminal.integrated.fontFamily": "SpaceMono Nerd Font",
+    "prettier.singleQuote": true,
+    "prettier.singleAttributePerLine": true,
+    "prettier.tabWidth": 4,
+    "notebook.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.detectIndentation": false,
+    "editor.indentSize": "tabSize",
+    "html.format.indentInnerHtml": true,
+    "editor.language.brackets": [],
+    "prettier.semi": false,
+    "html.suggest.hideEndTagSuggestions": true,
+    "prettier.bracketSameLine": true,
+    "editor.allowVariableFonts": false,
+    "terminal.integrated.fontWeight": "normal",
+    "terminal.external.windowsExec": "wt",
+    "terminal.integrated.fontWeightBold": "normal",
+    "terminal.integrated.automationProfile.windows": {},
+    "terminal.integrated.profiles.windows": {
+        "PowerShell": {
+            "path": "C:\\Program Files\\PowerShell\\7\\pwsh.exe"
+        },
+        "Command Prompt": {
+            "path": ["${env:windir}\\Sysnative\\cmd.exe", "${env:windir}\\System32\\cmd.exe"],
+            "args": [],
+            "icon": "terminal-cmd"
+        },
+        "Git Bash": {
+            "source": "Git Bash",
+            "icon": "terminal-git-bash"
+        }
+    },
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "terminal.integrated.confirmOnExit": "always",
+    "terminal.integrated.cursorStyle": "underline",
+    "terminal.integrated.cursorBlinking": true,
+    "github.copilot.enable": {
+        "*": false,
+        "plaintext": false,
+        "markdown": false,
+        "scminput": false
+    },
+    "markdown.preview.fontFamily": "Roboto, Open Sans, system-ui, sans-serif",
+    "prettier.printWidth": 120,
+    "editor.wordWrapColumn": 120,
+    "editor.wordWrap": "on",
+    "cSpell.ignoreWords": ["Axter", "Maisonave", "Phash", "stashapi", "stashapp", "zzdebug"],
+    "debug.breakpointsView.presentation": "tree",
+    "cSpell.userWords": ["Desai", "Omkar", "otheypsy", "vitest"]
+}
