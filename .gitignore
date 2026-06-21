@@ -1,4 +1,7 @@
-mpvnet/settings.xml
-mpvnet/shaders/
-mpvnet/fonts/
 *.log
+.vscode
+
+mpvnet/settings.xml
+mpvnet/inactive/
+mpvnet/shaders/
+mpvnet/playlists/

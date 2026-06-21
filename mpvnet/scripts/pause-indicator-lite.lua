@@ -52,7 +52,7 @@ local options = {
 }
 
 local msg = require "mp.msg"
-require 'mp.options'.read_options(options, "pause_indicator_lite")
+require 'mp.options'.read_options(options, "pause-indicator-lite")
 
 local state = {
     indicator_overlay = mp.create_osd_overlay("ass-events"),
