@@ -1,13 +1,25 @@
 *.log
 .vscode
 
-mpvnet/settings.xml
-mpvnet/inactive/
-mpvnet/shaders/
-mpvnet/playlists/
+.oh-my-posh/**
+!.oh-my-posh/theme/powerlevel10k_lean.omp.json
 
-PowerShell/Modules/
-PowerShell/Scripts/
+mpv.net/**
+!mpv.net/custom/
+!mpv.net/custom/**
+!mpv.net/fonts/
+!mpv.net/fonts/**
+!mpv.net/script-opts/
+!mpv.net/script-opts/**
+!mpv.net/scripts/
+!mpv.net/scripts/**
+!mpv.net/input.conf
+!mpv.net/mpv.conf
+!mpv.net/mpvnet.conf
+!mpv.net/theme.conf
 
-vscode/User/
+PowerShell/**
+!PowerShell/Microsoft.PowerShell_profile.ps1
+
+vscode/User/**
 !vscode/User/settings.json
