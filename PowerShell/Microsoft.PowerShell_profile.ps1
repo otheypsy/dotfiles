@@ -1,3 +1,7 @@
+# --- Commands --- #
+# New-Item -ItemType SymbolicLink -Path "<<link_file>>" -Target "<<source_file>>"
+# New-Item -ItemType Junction     -Path "<<link_file>>" -Target "<<source_file>>"
+
 # --- Oh-my-Posh Config --- #
 oh-my-posh init pwsh --config ~/.oh-my-posh/themes/powerlevel10k_lean.omp.json | Invoke-Expression
 
@@ -48,6 +52,15 @@ function Read-SelectionInput {
 }
 
 # --- ffmpeg --- #
+<#
+.SYNOPSIS
+    Join video files 
+.DESCRIPTION
+    A script that uses ffpmeg to join all video files from the current folder. All files must be of the same type (mp4 or mkv)
+.NOTES
+    Author         : otheypsy
+    Prerequisite   : ffmpeg
+#>
 Set-Alias -Name 'jvideo' -Value 'Join-Video'
 function Join-Video {
 	
@@ -68,14 +81,29 @@ function Join-Video {
 	Remove-Item -Path "parts.txt"
 }
 
+<#
+.SYNOPSIS
+    Download videos using yt-dlp
+.DESCRIPTION
+    A script that uses yt-dlp to download videos
+.NOTES
+    Author         : otheypsy
+    Prerequisite   : yt-dlp
+.PARAMETER
+    Source video url
+#>
 # --- yt-dlp --- #
-Set-Alias -Name 'ytdlp' -Value 'YT-Download'
+Set-Alias -Name 'ytd' -Value 'YT-Download'
 function YT-Download {
+	[CmdletBinding()] 
 	
-	if($args[0] -ne "") {
-		$url = $args[0]
-	}
-	else {
+	param (
+		[Parameter(Position=0, Mandatory= $false)]
+		[String]$url,
+		[switch]$ext
+	)
+	
+	if($url -eq "") {
 		$url = Read-Host "Enter video URL"
 	}
 	
@@ -84,13 +112,25 @@ function YT-Download {
 		$output = "%(title)s"
 	}
 	
-	yt-dlp `
-	-S vcodec:h264 `
-	--embed-subs `
-	--embed-chapters `
-	--downloader aria2c `
-	--downloader-args "aria2c:-x 16 -s 16" `
-	--extractor-args "generic:impersonate" `
-	--output "$output.%(ext)s" `
-	"$url"
+	$splat = @(
+		$url,
+		'--verbose',
+		'--embed-subs',
+		'--embed-chapters',
+		'--merge-output-format=mp4'
+		'--concurrent-fragments=16',
+		'--impersonate=chrome',
+		'--downloader-args="aria2c: --continue --min-split-size=1M --max-connection-per-server=16 --max-concurrent-downloads=16 --split=16"',
+		'--extractor-args=generic:impersonate'
+	)
+	if($ext -eq $true) {
+		$splat += '--downloader=aria2c'
+	}
+	
+	yt-dlp $splat
+	
 }
+#f45873b3-b655-43a6-b217-97c00aa0db58 PowerToys CommandNotFound module
+
+Import-Module -Name Microsoft.WinGet.CommandNotFound
+#f45873b3-b655-43a6-b217-97c00aa0db58
