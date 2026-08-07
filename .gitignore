@@ -1,6 +1,9 @@
 *.log
 .vscode
 
+.oh-my-zsh/**
+!.oh-my-posh/custom/themes/odesai.zsh-theme
+
 .oh-my-posh/**
 !.oh-my-posh/theme/powerlevel10k_lean.omp.json
 
@@ -18,8 +21,10 @@ mpv.net/**
 !mpv.net/mpvnet.conf
 !mpv.net/theme.conf
 
+PowerShell/
 PowerShell/**
 !PowerShell/Microsoft.PowerShell_profile.ps1
 
+vscode/User/
 vscode/User/**
 !vscode/User/settings.json
