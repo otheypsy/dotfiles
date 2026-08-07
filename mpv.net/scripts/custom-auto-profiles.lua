@@ -1,13 +1,13 @@
 -- Note: anything global is accessible by profile condition expressions.
 
-local msg = require 'mp.msg'
+local msg = require "mp.msg"
+local utils = require "mp.utils"
 
-local profiles = {}
-local watched_properties = {}       -- indexed by property name (used as a set)
-local cached_properties = {}        -- property name -> last known raw value
-local properties_to_profiles = {}   -- property name -> set of profiles using it
-local have_dirty_profiles = false   -- at least one profile is marked dirty
-local pending_hooks = {}            -- as set (keys only, meaningless values)
+local watched_properties = {}     -- indexed by property name (used as a set)
+local cached_properties = {}      -- property name -> last known raw value
+local properties_to_profiles = {} -- property name -> set of profiles using it
+local have_dirty_profiles = false -- at least one profile is marked dirty
+local pending_hooks = {}          -- as set (keys only, meaningless values)
 
 -- Used during evaluation of the profile condition, and should contain the
 -- profile the condition is evaluated for.
@@ -34,27 +34,30 @@ local function evaluate(profile)
     res = not not res
     if res ~= profile.status then
         if res == true then
-            msg.info("Applying auto profile: " .. profile.name)
+            msg.debug("Applying auto profile: " .. profile.name)
             mp.commandv("apply-profile", profile.name)
-			mp.set_property_native("user-data/profile_notifier/profiles/" .. profile.name, true)
-        elseif profile.status == true and profile.has_restore_opt then
-            msg.info("Restoring profile: " .. profile.name)
-            mp.commandv("apply-profile", profile.name, "restore")
-			mp.set_property_native("user-data/profile_notifier/profiles/" .. profile.name, false)
+        elseif profile.status == true then
+            if profile.has_restore_opt then
+                msg.debug("Restoring profile: " .. profile.name)
+                mp.commandv("apply-profile", profile.name, "restore")
+            end
         end
     end
     profile.status = res
     profile.dirty = false
 end
 
-local function display_profiles()	
-	local osd_text = "{\\an3}{\\fs8}"
-	for _, profile in ipairs(profiles) do
-		if profile.status == true then
-			osd_text = osd_text .. " [" .. profile.name .. "]"
-		end
-	end
-	mp.set_osd_ass(0, 0, osd_text)
+local function display_profiles()
+    local active_profiles = {}
+    local osd_text = "{\\an3}{\\fs8}{\\b1}{\\3c&000000&}{\\3a&H66}{\\bord0.5}{\\be1}{\\1c&E6E2DE&}"
+    for _, profile in ipairs(profiles) do
+        if profile.status == true then
+            table.insert(active_profiles, profile.name)
+            osd_text = osd_text .. " [" .. profile.name .. "]"
+        end
+    end
+    mp.set_property_native("user-data/custom_auto_profiles/active_profiles", active_profiles)
+    mp.set_osd_ass(0, 0, osd_text)
 end
 
 local function on_property_change(name, val)
@@ -79,7 +82,7 @@ local function on_idle()
                 evaluate(profile)
             end
         end
-		display_profiles()
+        display_profiles()
     end
     have_dirty_profiles = false
     -- Release all hooks (the point was to wait until an idle event)
@@ -197,7 +200,7 @@ local function load_profiles(profiles_property)
     end
 end
 
-mp.observe_property("profile-list", "native", function (_, profiles_property)
+mp.observe_property("profile-list", "native", function(_, profiles_property)
     profiles = {}
     watched_properties = {}
     cached_properties = {}
@@ -215,6 +218,6 @@ mp.observe_property("profile-list", "native", function (_, profiles_property)
 end)
 
 mp.register_idle(on_idle)
-for _, name in ipairs({"on_load", "on_preloaded", "on_loaded", "on_before_start_file"}) do
+for _, name in ipairs({ "on_load", "on_preloaded", "on_loaded", "on_before_start_file" }) do
     mp.add_hook(name, 5, on_hook)
 end

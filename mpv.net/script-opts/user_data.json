@@ -1,28 +1,10 @@
 {
-	"profile_notifier": {
-		"profiles": {
-			"video": false,
-			"image": false,
-			"hdr": false,
-			"sdr": false,
-			"uhd-60": false,
-			"uhd-30": false,
-			"qhd-60": false,
-			"qhd-30": false,
-			"fhd-60": false,
-			"fhd-30": false,
-			"fhd-interlaced": false,
-			"hd": false,
-			"sdtv": false,
-			"anime-hq-a": false,
-			"anime-hq-b": false,
-			"anime-hq-c": false,
-			"av1-sw-decode": false
-		}
-	},
 	"mpv": {
 		"stats": {
 			"open": false
 		}
+	},
+	"custom_auto_profiles": {
+		"active_profiles": {}
 	}
 }
