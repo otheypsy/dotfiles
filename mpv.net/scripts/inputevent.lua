@@ -3,6 +3,7 @@
 
 local utils = require("mp.utils")
 local options = require("mp.options")
+local msg = require("mp.msg")
 
 local o = {
     configs = "input.conf",
