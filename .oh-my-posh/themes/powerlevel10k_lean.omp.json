@@ -1,47 +1,56 @@
 {
-  "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
-  "blocks": [
-    {
-      "segments": [
-        {
-          "foreground": "#00C5C7",
-          "options": {
-            "time_format": "15:04:05"
-          },
-          "style": "plain",
-          "template": " {{ .CurrentDate | date .Format }} ",
-          "type": "time"
-        }
-      ],
-      "type": "rprompt"
+    "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+    "final_space": true,
+    "cursor_style": "default_blinking",
+    "upgrade": {
+        "notice": true,
+        "interval": "168h",
+        "auto": false,
+        "source": "github"
     },
-    {
-      "alignment": "left",
-      "segments": [
+    "blocks": [
         {
-          "foreground": "#77E4F7",
-          "options": {
-            "style": "full"
-          },
-          "style": "plain",
-          "template": "{{ .Path }} ",
-          "type": "path"
+            "type": "prompt",
+            "alignment": "left",
+            "segments": [
+                {
+                    "type": "path",
+                    "style": "powerline",
+                    "foreground": "#6EDFF6",
+                    "options": {
+                        "style": "full"
+                    },
+                    "template": "{{ .Path }} "
+                },
+                {
+                    "type": "git",
+                    "style": "powerline",
+                    "foreground": "#FFDA6A",
+                    "template": "\u276f {{ .HEAD }} "
+                },
+                {
+                    "type": "text",
+                    "style": "powerline",
+                    "foreground": "#75B798",
+                    "template": "\u276f\u276f"
+                }
+            ]
         },
         {
-          "foreground": "#FFE700",
-          "style": "plain",
-          "template": "{{ .HEAD }} ",
-          "type": "git"
-        },
-        {
-          "foreground": "#43D426",
-          "style": "plain",
-          "template": "\u276f ",
-          "type": "text"
+            "type": "rprompt",
+            "alignment": "right",
+            "segments": [
+                {
+                    "foreground": "#75B798",
+                    "options": {
+                        "time_format": "15:04:05"
+                    },
+                    "style": "plain",
+                    "template": "{{ .CurrentDate | date .Format }} ",
+                    "type": "time"
+                }
+            ]
         }
-      ],
-      "type": "prompt"
-    }
-  ],
-  "version": 4
+    ],
+    "version": 4
 }
