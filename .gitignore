@@ -12,10 +12,12 @@ mpv.net/**
 !mpv.net/custom/**
 !mpv.net/fonts/
 !mpv.net/fonts/**
-!mpv.net/script-opts/
-!mpv.net/script-opts/**
 !mpv.net/scripts/
 !mpv.net/scripts/**
+!mpv.net/script-opts/
+!mpv.net/script-opts/**
+!mpv.net/shaders/
+!mpv.net/shaders/**
 !mpv.net/input.conf
 !mpv.net/mpv.conf
 !mpv.net/mpvnet.conf
