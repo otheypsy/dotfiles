@@ -140,6 +140,9 @@ local settings = {
     --good side is cursor always following current file when going back and forth files with playlist-next/prev
     sync_cursor_on_load = true,
 
+    --remove files that are not found at path or directory
+    remove_file_not_found = true,
+
     --allow the playlist cursor to loop from end to start and vice versa
     loop_cursor = true,
 
@@ -162,6 +165,12 @@ local settings = {
 
     --call ffprobe to resolve the titles of local files in the playlist (if they exist in the metadata)
     resolve_local_titles = false,
+
+    --call ffprobe to resolve the playtime duration of local files (if it exist in the metadata)
+    resolve_playtime_duration = true,
+
+    --call ffprobe to resolve a local video file's resolution (if it exist in the metadata)
+    resolve_video_resolution = true,
 
     -- timeout in seconds for url title resolving
     resolve_title_timeout = 15,
@@ -233,14 +242,13 @@ local settings = {
     display_osd_feedback = true,
 
     resolution_labels = [[
+        {"id":"not_found","label":"NULL"}
         {"id":"sd","label":"SD"},
         {"id":"hd","label":"HD"},
         {"id":"fhd","label":"FHD"},
         {"id":"qhd","label":"QHD"},
         {"id":"uhd","label":"UHD"}
     ]]
-
-
 }
 local opts = require("mp.options")
 opts.read_options(settings, "playlist-manager", function(list) Update_Opts(list) end)
@@ -274,7 +282,7 @@ end
 
 -- auto calculate show_amount
 if settings.show_amount == -1 then
-    -- same as draw_playlist() height
+    -- same as Draw_Playlist() height
     local h = 720
 
     local playlist_h = h
@@ -284,7 +292,7 @@ if settings.show_amount == -1 then
     -- osd-font-size is based on 720p height
     -- see https://mpv.io/manual/stable/#options-osd-font-size
     -- details in https://mpv.io/manual/stable/#options-sub-font-size
-    -- draw_playlist() is based on 720p, need some conversion
+    -- Draw_Playlist() is based on 720p, need some conversion
     local fs = mp.get_property_native("osd-font-size") * h / 720
     -- get the ass font size
     if settings.style_ass_tags ~= nil then
@@ -332,11 +340,16 @@ local requested_titles = {}
 local filetype_lookup = {}
 local resolution_labels = {}
 
-function Refresh_UI()
+local function refresh_globals()
+    pos = mp.get_property_number("playlist-pos", 0)
+    plen = mp.get_property_number("playlist-count", 0)
+end
+
+local function refresh_ui()
     if not playlist_visible then return end
-    Refresh_Globals()
+    refresh_globals()
     if plen == 0 then return end
-    draw_playlist()
+    Draw_Playlist()
 end
 
 function Update_Opts(changelog)
@@ -366,11 +379,16 @@ function Update_Opts(changelog)
     if changelog.resolution_labels then
         settings.resolution_labels = utils.parse_json(settings.resolution_labels)
 
+        local max_length = 0
         resolution_labels = {}
         --create loadfiles set
         for _, item in ipairs(settings.resolution_labels) do
             resolution_labels[item["id"]] = item["label"]
+            if string.len(item["label"]) > max_length then
+                max_length = string.len(item["label"])
+            end
         end
+        resolution_labels["max_length"] = max_length
     end
 
     if changelog.resolve_url_titles then
@@ -381,12 +399,16 @@ function Update_Opts(changelog)
         resolve_titles()
     end
 
-    if changelog.playlist_display_timeout then
-        keybindstimer = mp.add_periodic_timer(settings.playlist_display_timeout, remove_keybinds)
-        keybindstimer:kill()
+    if changelog.resolve_playtime_duration or changelog.resolve_video_resolution then
+        resolve_metadata()
     end
 
-    Refresh_UI()
+    if changelog.playlist_display_timeout then
+        PM_Keybinds_Timer = mp.add_periodic_timer(settings.playlist_display_timeout, remove_keybinds)
+        PM_Keybinds_Timer:kill()
+    end
+
+    refresh_ui()
 end
 
 Update_Opts({ filename_replace = true, loadfiles_filetypes = true, resolution_labels = true })
@@ -489,104 +511,7 @@ local function is_protocol(path)
     return type(path) == "string" and path:match("^%a[%a%d-_]+://") ~= nil
 end
 
-function On_Preloaded_Hook()
-    if settings.reverse_playlist_on_startup and not reversed_playlist_on_startup then
-        reverse_playlist()
-        mp.set_property("playlist-pos", 0)
-        cursor = 0
-        reversed_playlist_on_startup = true
-    end
-end
-
-function On_File_Loaded()
-    Refresh_Globals()
-    if settings.sync_cursor_on_load then cursor = pos end
-    Refresh_UI() -- refresh only after moving cursor
-
-    filename = mp.get_property("filename")
-    path = mp.get_property("path")
-    local media_title = mp.get_property("media-title")
-    if is_protocol(path) and not title_table[path] and path ~= media_title then
-        title_table[path] = media_title
-    end
-
-    stripped_name = Strip_Filename(mp.get_property("media-title"))
-    if settings.show_title_on_file_load then
-        mp.commandv("show-text", stripped_name)
-    end
-    if settings.show_playlist_on_file_load then
-        showplaylist()
-    end
-    if settings.set_title_stripped then
-        mp.set_property("title", settings.title_prefix .. stripped_name .. settings.title_suffix)
-    end
-end
-
-function On_Start_File()
-    Refresh_Globals()
-
-    filename = mp.get_property("filename")
-    path = mp.get_property("path")
-    if path == nil or filename == nil then
-        return
-    end
-
-    --if not a url then join path with working directory
-    if not is_protocol(path) then
-        path = utils.join_path(mp.get_property("working-directory"), path)
-
-        directory = utils.split_path(path)
-    else
-        directory = nil
-    end
-
-    if settings.loadfiles_on_start and plen == 1 then
-        local ext = filename:match("%.([^%.]+)$")
-        -- a directory or playlist has been loaded, let's not do anything as mpv will expand it into files
-        if ext and filetype_lookup[ext:lower()] then
-            msg.info("Loading files from playing files directory")
-            playlist()
-        end
-    end
-end
-
-function On_End_File(event)
-    if event["reason"] == "error" then
-        mp.commandv("playlist-remove", cursor)
-    end
-
-    Refresh_Globals()
-    if settings.save_playlist_on_file_end then save_playlist() end
-    stripped_name = nil
-    path = nil
-    directory = nil
-    filename = nil
-end
-
-function On_Playlist_Change(name, data)
-    for key, value in pairs(data) do
-        if value ~= nil and value["filename"] ~= nil then
-            local file_name = value["filename"]
-            _, name = utils.split_path(file_name)
-            local ext = name:match("%.([^%.]+)$")
-
-            if ext and filetype_lookup[ext:lower()] and not metadata_table[name] then
-                get_metadata(key, file_name)
-            end
-        end
-    end
-end
-
-function Refresh_Globals()
-    pos = mp.get_property_number("playlist-pos", 0)
-    plen = mp.get_property_number("playlist-count", 0)
-end
-
-function escapepath(dir, escapechar)
-    return string.gsub(dir, escapechar, "\\" .. escapechar)
-end
-
-function replace_table_has_value(value, valid_values)
+local function replace_table_has_value(value, valid_values)
     if value == nil or valid_values == nil then
         return false
     end
@@ -661,12 +586,11 @@ function get_file_info(item)
 end
 
 --gets a nicename of playlist entry at 0-based position i
-function get_name_from_index(i, notitle)
-    Refresh_Globals()
+local function get_name_from_index(i, notitle)
+    refresh_globals()
     if plen <= i then
         msg.error("no index in playlist", i, "length", plen); return nil
     end
-    local _, name = nil
     local title = mp.get_property("playlist/" .. i .. "/title")
     local name = mp.get_property("playlist/" .. i .. "/filename")
 
@@ -691,6 +615,25 @@ function get_name_from_index(i, notitle)
     return Strip_Filename(name):gsub("\\", "\\\239\187\191"):gsub("{", "\\{"):gsub("^ ", "\\h")
 end
 
+local function get_metadata_from_index(i)
+    refresh_globals()
+    if plen <= i then
+        msg.error("no index in playlist", i, "length", plen); return nil
+    end
+
+    local filename = mp.get_property("playlist/" .. i .. "/filename")
+    local metadata = metadata_table[filename]
+    if not metadata then
+        metadata = {
+            duration = "xx:xx:xx",
+            resolution = resolution_labels["not_found"] or "NA"
+        }
+    end
+    metadata["max_length"] = resolution_labels["max_length"] or ""
+    msg.verbose(utils.format_json(metadata))
+    return metadata
+end
+
 function Parse_Header(string)
     local esc_title = Strip_Filename(mp.get_property("media-title"), true):gsub("%%", "%%%%")
     local esc_file = Strip_Filename(mp.get_property("filename")):gsub("%%", "%%%%")
@@ -706,18 +649,19 @@ function Parse_Header(string)
         :gsub("%%%%", "%%")
 end
 
-function parse_template(string, name, index, metadata)
+local function parse_playlist_entry(string, name, metadata, index)
     local base = tostring(plen):len()
     local esc_name = Strip_Filename(name):gsub("%%", "%%%%")
     return string:gsub("%%N", "\\N")
         :gsub("%%pos", string.format("%0" .. base .. "d", index + 1))
-        :gsub("%%meta", metadata)
         :gsub("%%name", esc_name)
+        :gsub("%%dur", metadata["duration"])
+        :gsub("%%res", string.format("%" .. metadata["max_length"] .. "s", metadata["resolution"]))
         -- undo name escape
         :gsub("%%%%", "%%")
 end
 
-function generate_final_string(index, metadata)
+local function parse_playlist_entry_by_index(index)
     local template = settings.normal_file
 
     local is_idle = mp.get_property_native("idle-active")
@@ -741,7 +685,9 @@ function generate_final_string(index, metadata)
         end
     end
 
-    return parse_template(template, get_name_from_index(index), index, metadata)
+    local name = get_name_from_index(index)
+    local metadata = get_metadata_from_index(index)
+    return parse_playlist_entry(template, name, metadata, index)
 end
 
 function is_terminal_mode()
@@ -749,7 +695,7 @@ function is_terminal_mode()
     return width == 0 and height == 0 and aspect_ratio == 0
 end
 
-function draw_playlist()
+function Draw_Playlist()
     -- if there is no playing file, then cursor can be -1. That would break rendering of playlist.
     if cursor == -1 then
         cursor = 0
@@ -859,14 +805,10 @@ function draw_playlist()
             ass:append("\\N" .. settings.playlist_sliced_suffix)
             terminal_output = terminal_output .. settings.playlist_sliced_suffix .. "\n"
         else
-            -- parse_filename_by_index expects 0 based index
-            local index = playlist_index - 1
-            local filename = mp.get_property("playlist/" .. index .. "/filename")
-            local _, name = utils.split_path(filename)
-            local metadata = metadata_table[name] or "0"
-            local final_string = generate_final_string(index, metadata)
-            ass:append(final_string .. "\\N")
-            terminal_output = terminal_output .. final_string .. "\n"
+            -- parse_playlist_entry_by_index expects 0 based index
+            local playlist_item = parse_playlist_entry_by_index(playlist_index - 1)
+            ass:append(playlist_item .. "\\N")
+            terminal_output = terminal_output .. playlist_item .. "\n"
         end
     end
 
@@ -896,9 +838,9 @@ function handle_complex_playlist_toggle(table)
     local event = table["event"]
     if event == "press" then
         msg.error("Complex key event not supported. Falling back to normal playlist display.")
-        showplaylist()
+        Show_Playlist()
     elseif event == "down" then
-        showplaylist(1000000)
+        Show_Playlist(1000000)
         if settings.peek_respect_display_timeout then
             peek_button_pressed = true
             peek_display_timer = mp.add_periodic_timer(settings.playlist_display_timeout, peek_timeout)
@@ -929,7 +871,7 @@ function handle_complex_playlist_toggle(table)
 end
 
 function toggle_playlist(show_function)
-    local show = show_function or showplaylist
+    local show = show_function or Show_Playlist
     if playlist_visible then
         remove_keybinds()
     else
@@ -938,8 +880,8 @@ function toggle_playlist(show_function)
     end
 end
 
-function showplaylist(duration)
-    Refresh_Globals()
+function Show_Playlist(duration)
+    refresh_globals()
     if plen == 0 then return end
     if not playlist_visible and settings.reset_cursor_on_open then
         resetcursor()
@@ -948,46 +890,46 @@ function showplaylist(duration)
     playlist_visible = true
     add_keybinds()
 
-    draw_playlist()
-    keybindstimer:kill()
+    Draw_Playlist()
+    PM_Keybinds_Timer:kill()
 
     local dur = tonumber(duration) or settings.playlist_display_timeout
     if dur > 0 then
-        keybindstimer = mp.add_periodic_timer(dur, remove_keybinds)
+        PM_Keybinds_Timer = mp.add_periodic_timer(dur, remove_keybinds)
     end
 end
 
-function showplaylist_non_interactive(duration)
-    Refresh_Globals()
+function Show_Playlist_Non_Interactive(duration)
+    refresh_globals()
     if plen == 0 then return end
     if not playlist_visible and settings.reset_cursor_on_open then
         resetcursor()
     end
     playlist_visible = true
-    draw_playlist()
-    keybindstimer:kill()
+    Draw_Playlist()
+    PM_Keybinds_Timer:kill()
 
     local dur = tonumber(duration) or settings.playlist_display_timeout
     if dur > 0 then
-        keybindstimer = mp.add_periodic_timer(dur, remove_keybinds)
+        PM_Keybinds_Timer = mp.add_periodic_timer(dur, remove_keybinds)
     end
 end
 
 selection = nil
 function selectfile()
-    Refresh_Globals()
+    refresh_globals()
     if plen == 0 then return end
     if not selection then
         selection = cursor
     else
         selection = nil
     end
-    showplaylist()
+    Show_Playlist()
 end
 
 function unselectfile()
     selection = nil
-    showplaylist()
+    Show_Playlist()
 end
 
 function resetcursor()
@@ -996,7 +938,7 @@ function resetcursor()
 end
 
 function removefile()
-    Refresh_Globals()
+    refresh_globals()
     if plen == 0 then return end
     selection = nil
     if cursor == pos then
@@ -1008,12 +950,12 @@ function removefile()
     if plen == 1 then
         remove_keybinds()
     else
-        showplaylist()
+        Show_Playlist()
     end
 end
 
 function moveup()
-    Refresh_Globals()
+    refresh_globals()
     if plen == 0 then return end
     if cursor ~= 0 then
         if selection then mp.commandv("playlist-move", cursor, cursor - 1) end
@@ -1022,11 +964,11 @@ function moveup()
         if selection then mp.commandv("playlist-move", cursor, plen) end
         cursor = plen - 1
     end
-    showplaylist()
+    Show_Playlist()
 end
 
 function movedown()
-    Refresh_Globals()
+    refresh_globals()
     if plen == 0 then return end
     if cursor ~= plen - 1 then
         if selection then mp.commandv("playlist-move", cursor, cursor + 2) end
@@ -1035,11 +977,11 @@ function movedown()
         if selection then mp.commandv("playlist-move", cursor, 0) end
         cursor = 0
     end
-    showplaylist()
+    Show_Playlist()
 end
 
 function movepageup()
-    Refresh_Globals()
+    refresh_globals()
     if plen == 0 or cursor == 0 then return end
     local offset = settings.show_amount % 2 == 0 and 1 or 0
     local last_file_that_doesnt_scroll = math.ceil(settings.show_amount / 2)
@@ -1053,11 +995,11 @@ function movepageup()
     if selection then
         mp.commandv("playlist-move", prev_cursor, cursor)
     end
-    showplaylist()
+    Show_Playlist()
 end
 
 function movepagedown()
-    Refresh_Globals()
+    refresh_globals()
     if plen == 0 or cursor == plen - 1 then return end
     local last_file_that_doesnt_scroll = math.ceil(settings.show_amount / 2) - 1
     local files_to_jump = math.max(last_file_that_doesnt_scroll - cursor, 0) + settings.show_amount - 2
@@ -1071,25 +1013,25 @@ function movepagedown()
     if selection then
         mp.commandv("playlist-move", prev_cursor, cursor + 1)
     end
-    showplaylist()
+    Show_Playlist()
 end
 
 function movebegin()
-    Refresh_Globals()
+    refresh_globals()
     if plen == 0 or cursor == 0 then return end
     local prev_cursor = cursor
     cursor = 0
     if selection then mp.commandv("playlist-move", prev_cursor, cursor) end
-    showplaylist()
+    Show_Playlist()
 end
 
 function moveend()
-    Refresh_Globals()
+    refresh_globals()
     if plen == 0 or cursor == plen - 1 then return end
     local prev_cursor = cursor
     cursor = plen - 1
     if selection then mp.commandv("playlist-move", prev_cursor, cursor + 1) end
-    showplaylist()
+    Show_Playlist()
 end
 
 function write_watch_later(force_write)
@@ -1106,7 +1048,7 @@ function playlist_next()
     if settings.close_playlist_on_playfile then
         remove_keybinds()
     end
-    Refresh_UI()
+    refresh_ui()
 end
 
 function playlist_prev()
@@ -1115,12 +1057,12 @@ function playlist_prev()
     if settings.close_playlist_on_playfile then
         remove_keybinds()
     end
-    Refresh_UI()
+    refresh_ui()
 end
 
 function playlist_random()
     write_watch_later()
-    Refresh_Globals()
+    refresh_globals()
     if plen < 2 then return end
     math.randomseed(os.time())
     local random = pos
@@ -1134,7 +1076,7 @@ function playlist_random()
 end
 
 function playfile()
-    Refresh_Globals()
+    refresh_globals()
     if plen == 0 then return end
     selection = nil
     local is_idle = mp.get_property_native("idle-active")
@@ -1155,7 +1097,7 @@ function playfile()
     if settings.close_playlist_on_playfile then
         remove_keybinds()
     elseif playlist_visible then
-        showplaylist()
+        Show_Playlist()
     end
 end
 
@@ -1184,7 +1126,7 @@ end
 --Creates a playlist of all files in directory, will keep the order and position
 --For exaple, Folder has 12 files, you open the 5th file and run this, the remaining 7 are added behind the 5th file and prior 4 files before it
 function playlist(force_dir)
-    Refresh_Globals()
+    refresh_globals()
     if not directory and plen > 0 then return end
     local hasfile = true
     if plen == 0 then
@@ -1249,9 +1191,9 @@ function playlist(force_dir)
     else
         msg.error("Could not scan for files: " .. (error or ""))
     end
-    Refresh_Globals()
+    refresh_globals()
     if playlist_visible then
-        showplaylist()
+        Show_Playlist()
     end
     if settings.display_osd_feedback then
         if c2 > 0 or c > 0 then
@@ -1286,7 +1228,7 @@ local menu_items = {
     {
         label = "Show playlist",
         action = function()
-            showplaylist()
+            Show_Playlist()
         end,
     },
     {
@@ -1523,7 +1465,7 @@ function sortplaylist(startover)
         mp.set_property("playlist-pos", 0)
     end
     if playlist_visible then
-        showplaylist()
+        Show_Playlist()
     end
     if settings.display_osd_feedback then
         mp.osd_message("Playlist sorted with " .. sort_modes[sort_mode].title)
@@ -1543,7 +1485,7 @@ function reverse_playlist()
         mp.commandv("playlist-move", outer, 0)
     end
     if playlist_visible then
-        showplaylist()
+        Show_Playlist()
     end
     if settings.display_osd_feedback then
         mp.osd_message("Playlist reversed")
@@ -1551,7 +1493,7 @@ function reverse_playlist()
 end
 
 function shuffleplaylist()
-    Refresh_Globals()
+    refresh_globals()
     if plen < 2 then return end
     mp.command("playlist-shuffle")
     math.randomseed(os.time())
@@ -1568,9 +1510,9 @@ function shuffleplaylist()
     end
 
     mp.set_property("playlist-pos", 0)
-    Refresh_Globals()
+    refresh_globals()
     if playlist_visible then
-        showplaylist()
+        Show_Playlist()
     end
     if settings.display_osd_feedback then
         mp.osd_message("Playlist shuffled")
@@ -1631,9 +1573,9 @@ function add_keybinds()
 end
 
 function remove_keybinds()
-    keybindstimer:kill()
-    keybindstimer = mp.add_periodic_timer(settings.playlist_display_timeout, remove_keybinds)
-    keybindstimer:kill()
+    PM_Keybinds_Timer:kill()
+    PM_Keybinds_Timer = mp.add_periodic_timer(settings.playlist_display_timeout, remove_keybinds)
+    PM_Keybinds_Timer:kill()
     playlist_overlay.data = ""
     playlist_overlay:remove()
     if is_terminal_mode() then
@@ -1658,8 +1600,8 @@ function remove_keybinds()
     end
 end
 
-keybindstimer = mp.add_periodic_timer(settings.playlist_display_timeout, remove_keybinds)
-keybindstimer:kill()
+PM_Keybinds_Timer = mp.add_periodic_timer(settings.playlist_display_timeout, remove_keybinds)
+PM_Keybinds_Timer:kill()
 
 if not settings.dynamic_binds then
     add_keybinds()
@@ -1673,13 +1615,14 @@ mp.observe_property("playlist-count", "number", function(_, plcount)
     --if we promised to listen and sort on playlist size increase do it
     if settings.sort_playlist_on_file_add and (plcount > plen) then
         msg.info("Added files will be automatically sorted")
-        Refresh_Globals()
+        refresh_globals()
         sortplaylist()
     end
-    Refresh_UI()
+    refresh_ui()
     resolve_titles()
+    resolve_metadata()
 end)
-mp.observe_property("osd-dimensions", "native", Refresh_UI)
+mp.observe_property("osd-dimensions", "native", refresh_ui)
 
 
 url_request_queue = {}
@@ -1736,19 +1679,36 @@ function local_fetching_throttler()
 
         if item["data_type"] == "metadata" then
             ongoing_local_request = true
-            ffprobe_get_metadata(item["id"], item["file"])
+            resolve_ffprobe_metadata(item["id"], item["file"])
         end
     end
 end
 
-function get_metadata(id, filename)
-    local fetch_params = {
-        id = id,
-        file = filename,
-        data_type = "metadata"
-    }
-    local_ffprobe_fetch.push(fetch_params)
-    local_fetching_throttler()
+function resolve_metadata()
+    if not settings.resolve_playtime_duration and not settings.resolve_video_resolution then return end
+
+    local length = mp.get_property_number("playlist-count", 0)
+    if length < 2 then return end
+
+    local added = false
+    for i = 0, length - 1, 1 do
+        local filename = mp.get_property("playlist/" .. i .. "/filename")
+        local ext = filename:match("%.([^%.]+)$")
+
+        if ext and filetype_lookup[ext:lower()] and not metadata_table[filename] then
+            added = true
+            local fetch_params = {
+                id = i,
+                file = filename,
+                data_type = "metadata"
+            }
+            local_ffprobe_fetch.push(fetch_params)
+        end
+    end
+
+    if added then
+        local_fetching_throttler()
+    end
 end
 
 function resolve_titles()
@@ -1821,7 +1781,7 @@ function resolve_ytdl_title(filename)
                     msg.verbose(filename .. " resolved to '" .. title .. "'")
                     title_table[filename] = title
                     mp.set_property_native("user-data/playlist-manager/titles", title_table)
-                    Refresh_UI()
+                    refresh_ui()
                 else
                     msg.error("Failed parsing json, reason: " .. (err or "unknown"))
                 end
@@ -1863,7 +1823,7 @@ function resolve_ffprobe_title(filename)
                     msg.verbose(filename .. " resolved to '" .. title .. "'")
                     title_table[filename] = title
                     mp.set_property_native("user-data/playlist-manager/titles", title_table)
-                    Refresh_UI()
+                    refresh_ui()
                 end
             else
                 msg.error("Failed to resolve local title " .. filename .. " Error: " .. (res.error or "unknown"))
@@ -1872,9 +1832,9 @@ function resolve_ffprobe_title(filename)
     )
 end
 
-function ffprobe_get_metadata(id, file)
-    local args = { "ffprobe", "-hide_banner", "-show_entries", "stream=height", "-show_entries", "format=duration",
-        "-sexagesimal", "-loglevel", "error", file }
+function resolve_ffprobe_metadata(id, filename)
+    local args = { "ffprobe", "-hide_banner", "-show_entries", "stream=width,height", "-show_entries", "format=duration",
+        "-sexagesimal", "-loglevel", "error", filename }
     local req = mp.command_native_async(
         {
             name = "subprocess",
@@ -1888,47 +1848,47 @@ function ffprobe_get_metadata(id, file)
             local_fetching_throttler()
 
             if res.killed_by_us then
-                msg.error("Request to get duration for " .. file .. " timed out")
+                msg.error("Request to get duration for " .. filename .. " timed out")
                 return
             end
 
             if res.status == 0 and success == true then
-                local _, name = utils.split_path(file)
                 local duration = string.match(res.stdout, "duration=([^\n\r.]+)")
-                local width = string.match(res.stdout, "height=([^\n\r.]+)")
+                local width = string.match(res.stdout, "width=([^\n\r.]+)")
                 local height = string.match(res.stdout, "height=([^\n\r.]+)")
                 duration = duration and duration or 0
+                width = tonumber(width and width or 0)
                 height = tonumber(height and height or 0)
 
-                msg.verbose("Resolution response for " .. name .. " was [" .. width .. "x" .. height .. "]")
-                msg.verbose("Duration response for " .. name .. " was [" .. duration .. "]")
+                msg.verbose("Metadata -- Resolution=[" ..
+                    width .. "x" .. height .. "] Duration=[" .. duration .. "] File=[" .. filename .. "]")
 
                 -- local width = string.match(res.stdout, "width=([^\n\r.]+)")
                 -- local resolution = string.format("%4sp", height) -- width .. "x" .. height
 
-                local resolution = "NA"
+                local resolution = resolution_labels["not_found"]
                 resolution = (0 < height and height < 720) and resolution_labels["sd"] or resolution
                 resolution = (720 <= height and height < 1080) and resolution_labels["hd"] or resolution
                 resolution = (1080 <= height and height < 1440) and resolution_labels["fhd"] or resolution
                 resolution = (1440 <= height and height < 2160) and resolution_labels["qhd"] or resolution
                 resolution = (1440 <= height) and resolution_labels["uhd"] or resolution
 
-
-                resolution = string.format("%3s", resolution)
-                metadata_table[name] = "[ " .. duration .. " ]"
-                metadata_table[name] = metadata_table[name] .. " -- " .. resolution .. " -- "
+                metadata_table[filename] = {
+                    duration = duration,
+                    resolution = resolution
+                }
+                refresh_ui()
 
 
                 return
             end
 
             if res.status ~= 0 then
-                msg.error("ffprobe failed with stderr for " .. file .. " -- " .. res.stderr)
-                if string.find(res.stderr, "No such file or directory") ~= nil then
-                    local playlist_id = id - 1
-                    local filename = mp.get_property("playlist/" .. playlist_id .. "/filename")
-                    if filename == file then
-                        mp.commandv("playlist-remove", playlist_id)
+                msg.error("ffprobe failed with stderr for " .. filename .. " -- " .. res.stderr)
+                if string.find(res.stderr, "No such file or directory") ~= nil and settings.remove_file_not_found then
+                    if filename == mp.get_property("playlist/" .. id .. "/filename") then
+                        mp.commandv("playlist-remove", id)
+						msg.info("Removed " .. filename .. " from playlist")
                     end
                 end
                 return
@@ -1939,28 +1899,28 @@ function ffprobe_get_metadata(id, file)
                 return
             end
 
-            msg.error("Failed to resolve duration for " .. file .. " Error: " .. (res.error or "unknown"))
+            msg.error("Failed to resolve duration for " .. filename .. " Error: " .. (res.error or "unknown"))
         end
     )
 end
 
 --script message handler
-function handlemessage(msg, value, value2)
+function Handle_Message(msg, value, value2)
     if msg == "show" and value == "playlist" then
         if value2 ~= "toggle" then
-            showplaylist(value2)
+            Show_Playlist(value2)
             return
         else
-            toggle_playlist(showplaylist)
+            toggle_playlist(Show_Playlist)
             return
         end
     end
     if msg == "show" and value == "playlist-nokeys" then
         if value2 ~= "toggle" then
-            showplaylist_non_interactive(value2)
+            Show_Playlist_Non_Interactive(value2)
             return
         else
-            toggle_playlist(showplaylist_non_interactive)
+            toggle_playlist(Show_Playlist_Non_Interactive)
             return
         end
     end
@@ -2006,16 +1966,16 @@ function handlemessage(msg, value, value2)
     if msg == "close" then remove_keybinds() end
 end
 
-mp.register_script_message("playlist-manager", handlemessage)
+mp.register_script_message("playlist-manager", Handle_Message)
 
 bind_keys(settings.key_sortplaylist, "sortplaylist", sortplaylist_by_next_mode)
 bind_keys(settings.key_shuffleplaylist, "shuffleplaylist", shuffleplaylist)
 bind_keys(settings.key_reverse_playlist, "reverse_playlist", reverse_playlist)
 bind_keys(settings.key_loadfiles, "loadfiles", playlist)
-bind_keys(settings.key_saveplaylist, "saveplaylist", activate_playlist_save)
+bind_keys(settings.key_saveplaylist, "saveplaylist", activate_playlist_save_prompt)
 bind_keys(settings.key_selectplaylist, "selectplaylist", select_playlist)
 bind_keys(settings.key_open_menu, "openmenu", open_menu)
-bind_keys(settings.key_show_playlist, "showplaylist", showplaylist)
+bind_keys(settings.key_show_playlist, "Show_Playlist", Show_Playlist)
 bind_keys(
     settings.key_peek_at_playlist,
     "peek_at_playlist",
@@ -2023,8 +1983,82 @@ bind_keys(
     { complex = true }
 )
 
+
+function On_Preloaded_Hook()
+    if settings.reverse_playlist_on_startup and not reversed_playlist_on_startup then
+        reverse_playlist()
+        mp.set_property("playlist-pos", 0)
+        cursor = 0
+        reversed_playlist_on_startup = true
+    end
+end
+
+function On_File_Loaded()
+    refresh_globals()
+    if settings.sync_cursor_on_load then cursor = pos end
+    refresh_ui() -- refresh only after moving cursor
+
+    filename = mp.get_property("filename")
+    path = mp.get_property("path")
+    local media_title = mp.get_property("media-title")
+    if is_protocol(path) and not title_table[path] and path ~= media_title then
+        title_table[path] = media_title
+    end
+
+    stripped_name = Strip_Filename(mp.get_property("media-title"))
+    if settings.show_title_on_file_load then
+        mp.commandv("show-text", stripped_name)
+    end
+    if settings.show_playlist_on_file_load then
+        Show_Playlist()
+    end
+    if settings.set_title_stripped then
+        mp.set_property("title", settings.title_prefix .. stripped_name .. settings.title_suffix)
+    end
+end
+
+function On_Start_File()
+    refresh_globals()
+
+    filename = mp.get_property("filename")
+    path = mp.get_property("path")
+    if path == nil or filename == nil then
+        return
+    end
+
+    --if not a url then join path with working directory
+    if not is_protocol(path) then
+        path = utils.join_path(mp.get_property("working-directory"), path)
+
+        directory = utils.split_path(path)
+    else
+        directory = nil
+    end
+
+    if settings.loadfiles_on_start and plen == 1 then
+        local ext = filename:match("%.([^%.]+)$")
+        -- a directory or playlist has been loaded, let's not do anything as mpv will expand it into files
+        if ext and filetype_lookup[ext:lower()] then
+            msg.info("Loading files from playing files directory")
+            playlist()
+        end
+    end
+end
+
+function On_End_File(event)
+    if event["reason"] == "error" then
+        mp.commandv("playlist-remove", cursor)
+    end
+
+    refresh_globals()
+    if settings.save_playlist_on_file_end then save_playlist() end
+    stripped_name = nil
+    path = nil
+    directory = nil
+    filename = nil
+end
+
 mp.register_event("start-file", On_Start_File)
 mp.register_event("file-loaded", On_File_Loaded)
 mp.register_event("end-file", On_End_File)
-mp.observe_property("playlist", "native", On_Playlist_Change)
 mp.add_hook("on_preloaded", 50, On_Preloaded_Hook)
