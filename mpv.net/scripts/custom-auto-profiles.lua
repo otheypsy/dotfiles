@@ -49,7 +49,7 @@ end
 
 local function display_profiles()
     local active_profiles = {}
-    local osd_text = "{\\an3}{\\fs8}{\\b1}{\\3c&000000&}{\\3a&H66}{\\bord0.5}{\\be1}{\\1c&E6E2DE&}"
+    local osd_text = "{\\an3}{\\fs8}{\\b1}{\\3c&111111&}{\\3a&H66}{\\bord0.5}{\\be1}{\\1c&E6E2DE&}"
     for _, profile in ipairs(profiles) do
         if profile.status == true then
             table.insert(active_profiles, profile.name)

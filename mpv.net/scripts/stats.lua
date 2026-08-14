@@ -139,6 +139,7 @@ local process_key_binding
 
 local property_cache = {}
 local profiles = {}
+local profiles_max_length = 0
 
 local function get_property_cached(name, def)
     if property_cache[name] ~= nil then
@@ -391,20 +392,25 @@ local function append_perfdata(header, s, dedicated_page)
     end
 
     -- Format n/m with a font weight based on the ratio
+    local function value_styling(n, m)
+        local i = 0
+        if m > 0 then
+            i = tonumber(n) / m
+        end
+
+        local p_bold = (i >= 0.2)
+        local p_color = (i >= 0.2) and warn_color or base_color
+        p_color = (i >= 0.7) and alert_color or p_color
+        return format("%s{\\b%d}", p_color, (p_bold and 1 or 0))
+    end
+
     local function p(n, m)
         local i = 0
         if m > 0 then
             i = tonumber(n) / m
         end
 
-        local p_bold = (i >= 0.4)
-        local p_color = (i >= 0.4) and warn_color or base_color
-        p_color = (i >= 0.7) and alert_color or p_color
-        if not o.use_ass then
-            local str = format("%s%3d%%%s", p_color, i * 100, base_color)
-            return p_bold and bold(str) or str
-        end
-        return format("%s{\\b%d}%3d%%{\\b0}%s", p_color, (p_bold and 1 or 0), i * 100, base_color)
+        return format("%3d%%", i * 100)
     end
 
     local font_small = o.use_ass and format("{\\fs%s}", font_size * 0.8) or ""
@@ -417,17 +423,17 @@ local function append_perfdata(header, s, dedicated_page)
     local f = "%s%s%s%s%s%s%s%s%s%s  %s   %s   %s"
 
     if dedicated_page then
-        h[#h + 1] = format("{\\1c&H%s&}%s{\\1c&H%s&}", o.font_highlight_color, bold("Frame Timings: "), o.font_color)
-
+        h[#h + 1] = format("{\\1c&H%s&}", o.font_highlight_color)
+        h[#h + 1] = format("%s", bold("Frame Timings: "))
         h[#h] = h[#h] .. format(f .. "%s%s",
             " ", " ", " ", o.indent, o.indent, o.indent,
             o.prefix_sep, o.prefix_sep, o.prefix_sep,
             "last", " avg", "peak", o.indent, o.indent, scroll_hint())
-
         h[#h + 1] = format("%s%s%s%s%s%s%s%s%s%s  %s   %s   %s",
             o.nl, o.indent, o.indent,
             o.indent, o.indent, o.indent, o.indent, o.prefix_sep, o.prefix_sep, " ",
             "----", "----", "----")
+        h[#h + 1] = format("{\\1c&H%s&}", o.font_color)
     else
         h[#h + 1] = format("%s%s%s%s%s",
             bold("Frame Timings:"), o.prefix_sep,
@@ -449,9 +455,9 @@ local function append_perfdata(header, s, dedicated_page)
                         pass["avg"], 0.8, 0.20, 254)
                 end
 
-                s[#s] = s[#s] .. format(" %s | %s | %s %s%s%s%s%s",
+                s[#s] = s[#s] .. format("%s %s | %s | %s %s%s%s%s%s{\\b0}%s", value_styling(pass["last"], last_s[frame]),
                     pp(pass["last"]), pp(pass["avg"]), pp(pass["peak"]),
-                    o.prefix_sep, p(pass["last"], last_s[frame]), o.indent, o.prefix_sep, pass["desc"])
+                    o.prefix_sep, p(pass["last"], last_s[frame]), o.indent, o.prefix_sep, pass["desc"], base_color)
             end
 
             s[#s + 1] = format("%s%s%s%s%s%s%s%s%s%s  %s   %s   %s",
@@ -835,20 +841,14 @@ local function add_profiles(s)
         }
     )
 
-    local length = 0
-    for _, profile in ipairs(profiles) do
-        if profile.active and string.len(profile.name) > length then
-            length = string.len(profile.name)
-        end
-    end
 
-    local template = "%-" .. length .. "s :"
-    for _, profile in ipairs(profiles) do
+    local template = "%-" .. profiles_max_length .. "s"
+    for _, profile in pairs(profiles) do
         if profile.active then
             append(s, profile["profile-desc"],
                 {
-                    prefix = format(template, profile.name),
-                    prefix_sep = " ",
+                    prefix = format(template .. "   ", profile.name),
+                    prefix_sep = " : ",
                     nl = o.nl,
                     indent = o.indent,
                     no_prefix_markup = true,
@@ -856,6 +856,19 @@ local function add_profiles(s)
                     second_highlight = false
                 }
             )
+            for _, sub_profile in pairs(profile["sub_profiles"]) do
+                append(s, profiles[sub_profile]["profile-desc"],
+                    {
+                        prefix = format(" ↪  " .. template, profiles[sub_profile]["name"]),
+                        prefix_sep = "  : ",
+                        nl = o.nl,
+                        indent = o.indent,
+                        no_prefix_markup = true,
+                        no_bold = true,
+                        second_highlight = false
+                    }
+                )
+            end
         end
     end
 end
@@ -975,7 +988,7 @@ local function add_displays(s)
             }
         )
         append(s,
-            format("%4d%4s%-4d", display["min_luminance"], " to ", display["max_luminance"]),
+            format("%-3.1f%4s%-3.1f", display["min_luminance"], " to ", display["max_luminance"]),
             {
                 prefix = format("%10s:", "Luminance"),
                 prefix_sep = " ",
@@ -2020,8 +2033,8 @@ local function default_stats()
             prefix = format("%s: %s", desc, scroll_hint()),
             nl = "",
             indent = "",
-            no_prefix_markup = true,
-            no_bold = true,
+            no_prefix_markup = false,
+            no_bold = false,
             second_highlight = false
         }
     )
@@ -3107,18 +3120,38 @@ local function update_property_cache(name, value)
 end
 
 local function update_profiles_cache(name, value)
-    profiles = value
+    profiles = {}
+    for _, profile in ipairs(value) do
+        local max_length = string.len(profile["name"])
+        profiles[profile["name"]] = profile
+        local sub_profiles = {}
+        for _, option in pairs(profile["options"]) do
+            if option["key"] == "profile" then
+                table.insert(sub_profiles, option["value"])
+                if string.len(option["value"]) > max_length then
+                    max_length = string.len(option["value"])
+                end
+            end
+        end
+        profiles[profile["name"]]["sub_profiles"] = sub_profiles
+        profiles[profile["name"]]["max_length"] = max_length
+    end
+    profiles_max_length = 0
 end
 
 local function update_auto_profiles()
     local active_profiles = mp.get_property_native("user-data/custom_auto_profiles/active_profiles")
     if not active_profiles then return end
 
-    for key, profile in ipairs(profiles) do
+    profiles_max_length = 0
+    for key, profile in pairs(profiles) do
         profiles[key]["active"] = false
         for _, active_profile_name in ipairs(active_profiles) do
             if profile.name == active_profile_name then
                 profiles[key]["active"] = true
+                if profiles[key]["max_length"] > profiles_max_length then
+                    profiles_max_length = profiles[key]["max_length"]
+                end
             end
         end
     end
