@@ -828,9 +828,11 @@ local peek_display_timer = nil
 local peek_button_pressed = false
 
 function peek_timeout()
-    peek_display_timer:kill()
-    if not peek_button_pressed and not playlist_visible then
-        remove_keybinds()
+    if peek_display_timer then
+        peek_display_timer:kill()
+        if not peek_button_pressed and not playlist_visible then
+            remove_keybinds()
+        end
     end
 end
 
@@ -860,7 +862,7 @@ function handle_complex_playlist_toggle(table)
 
         if settings.peek_respect_display_timeout then
             peek_button_pressed = false
-            if not peek_display_timer:is_enabled() then
+            if peek_display_timer and not peek_display_timer:is_enabled() then
                 mp.add_timeout(0.01, remove_keybinds_after_timeout)
             end
         else
@@ -1325,8 +1327,10 @@ function select_playlist()
     end
 
     local playlists = {}
-    for index, file in pairs(files) do
-        table.insert(playlists, file)
+    if files then
+        for _, file in pairs(files) do
+            table.insert(playlists, file)
+        end
     end
 
     input.select({
@@ -1364,7 +1368,7 @@ function save_playlist(filename)
         local unix_args = { "mkdir", savepath }
         local args = settings.system == "windows" and windows_args or unix_args
         local res = utils.subprocess({ args = args, cancellable = false })
-        if res.status ~= 0 then
+        if res and res.status ~= 0 then
             msg.error("Failed to create playlist save directory " .. savepath .. ". Error: " .. (res.error or "unknown"))
             return
         end
@@ -1423,7 +1427,7 @@ end
 -- fast sort algo from https://github.com/zsugabubus/dotfiles/blob/master/.config/mpv/scripts/playlist-filtersort.lua
 function sortplaylist(startover)
     local playlist = mp.get_property_native("playlist")
-    if #playlist < 2 then return end
+    if not playlist or #playlist < 2 then return end
 
     local order = {}
     for i = 1, #playlist do
@@ -1611,6 +1615,205 @@ if settings.loadfiles_on_idle_start and mp.get_property_number("playlist-count",
     playlist()
 end
 
+function resolve_titles()
+    if settings.prefer_titles == "none" then return end
+    if not settings.resolve_url_titles and not settings.resolve_local_titles then return end
+
+    local length = mp.get_property_number("playlist-count", 0)
+    if length < 2 then return end
+    -- loop all items in playlist because we can't predict how it has changed
+    local added_urls = false
+    local added_local = false
+    for i = 0, length - 1, 1 do
+        local filename = mp.get_property("playlist/" .. i .. "/filename")
+        local title = mp.get_property("playlist/" .. i .. "/title")
+        if i ~= pos
+            and filename
+            and not title
+            and not title_table[filename]
+            and not requested_titles[filename]
+        then
+            requested_titles[filename] = true
+            if filename:match("^https?://") and settings.resolve_url_titles then
+                url_titles_to_fetch.push(filename)
+                added_urls = true
+            elseif settings.prefer_titles == "all" and settings.resolve_local_titles then
+                local fetch_params = {
+                    file = filename,
+                    data_type = "title"
+                }
+                local_ffprobe_fetch.push(fetch_params)
+                added_local = true
+            end
+        end
+    end
+    if added_urls then
+        url_title_fetch_timer:resume()
+    end
+    if added_local then
+        local_fetching_throttler()
+    end
+end
+
+local function resolve_ytdl_title(filename)
+    local args = {
+        settings.youtube_dl_executable,
+        "--no-playlist",
+        "--flat-playlist",
+        "-sJ",
+        "--no-config",
+        filename,
+    }
+    local req = mp.command_native_async(
+        {
+            name = "subprocess",
+            args = args,
+            playback_only = false,
+            capture_stdout = true
+        },
+        function(success, res)
+            ongoing_url_requests[filename] = false
+            if res.killed_by_us then
+                msg.verbose("Request to resolve url title " .. filename .. " timed out")
+                return
+            end
+            if res.status == 0 then
+                local json, err = utils.parse_json(res.stdout)
+                if not err then
+                    local is_playlist = json["_type"] and json["_type"] == "playlist"
+                    local title = (is_playlist and "[playlist]: " or "") .. json["title"]
+                    msg.verbose(filename .. " resolved to '" .. title .. "'")
+                    title_table[filename] = title
+                    mp.set_property_native("user-data/playlist-manager/titles", title_table)
+                    refresh_ui()
+                else
+                    msg.error("Failed parsing json, reason: " .. (err or "unknown"))
+                end
+            else
+                msg.error("Failed to resolve url title " .. filename .. " Error: " .. (res.error or "unknown"))
+            end
+        end
+    )
+
+    mp.add_timeout(
+        settings.resolve_title_timeout,
+        function()
+            mp.abort_async_command(req)
+            ongoing_url_requests[filename] = false
+        end
+    )
+end
+
+local function resolve_ffprobe_title(filename)
+    local args = { "ffprobe", "-hide_banner", "-show_format", "-show_entries", "format=tags", "-loglevel", "quiet",
+        filename }
+    local req = mp.command_native_async(
+        {
+            name = "subprocess",
+            args = args,
+            playback_only = false,
+            capture_stdout = true
+        },
+        function(success, res)
+            ongoing_local_request = false
+            local_fetching_throttler()
+            if res.killed_by_us then
+                msg.verbose("Request to resolve local title " .. filename .. " timed out")
+                return
+            end
+            if res.status == 0 then
+                local title = string.match(res.stdout, "title=([^\n\r]+)")
+                if title then
+                    msg.verbose(filename .. " resolved to '" .. title .. "'")
+                    title_table[filename] = title
+                    mp.set_property_native("user-data/playlist-manager/titles", title_table)
+                    refresh_ui()
+                end
+            else
+                msg.error("Failed to resolve local title " .. filename .. " Error: " .. (res.error or "unknown"))
+            end
+        end
+    )
+end
+
+local function resolve_ffprobe_metadata(id, filename)
+    local args = { "ffprobe", "-hide_banner", "-show_entries", "stream=width,height", "-show_entries", "format=duration",
+        "-sexagesimal", "-loglevel", "error", filename }
+    local req = mp.command_native_async(
+        {
+            name = "subprocess",
+            args = args,
+            playback_only = false,
+            capture_stdout = true,
+            capture_stderr = true
+        },
+        function(success, res, err)
+            ongoing_local_request = false
+            local_fetching_throttler()
+
+            if res.killed_by_us then
+                msg.error("Request to get duration for " .. filename .. " timed out")
+                return
+            end
+
+            if res.status == 0 and success == true then
+                local duration = string.match(res.stdout, "duration=([^\n\r.]+)")
+                local width = string.match(res.stdout, "width=([^\n\r.]+)")
+                local height = string.match(res.stdout, "height=([^\n\r.]+)")
+                duration = duration and duration or 0
+                width = tonumber(width and width or 0)
+                height = tonumber(height and height or 0)
+
+                msg.verbose("Metadata -- Resolution=[" ..
+                    width .. "x" .. height .. "] Duration=[" .. duration .. "] File=[" .. filename .. "]")
+
+                -- local width = string.match(res.stdout, "width=([^\n\r.]+)")
+                -- local resolution = string.format("%4sp", height) -- width .. "x" .. height
+
+                local resolution = resolution_labels["not_found"]
+                if height < 720 then
+                    resolution = resolution_labels["sd"]
+                elseif height < 1080 then
+                    resolution = resolution_labels["hd"]
+                elseif height < 1440 then
+                    resolution = resolution_labels["fhd"]
+                elseif height < 2160 then
+                    resolution = resolution_labels["qhd"]
+                elseif height >= 2160 then
+                    resolution = resolution_labels["uhd"]
+                end
+
+                metadata_table[filename] = {
+                    duration = duration,
+                    resolution = resolution
+                }
+                refresh_ui()
+
+
+                return
+            end
+
+            if res.status ~= 0 then
+                msg.error("ffprobe failed with stderr for " .. filename .. " -- " .. res.stderr)
+                if string.find(res.stderr, "No such file or directory") ~= nil and settings.remove_file_not_found then
+                    if filename == mp.get_property("playlist/" .. id .. "/filename") then
+                        mp.commandv("playlist-remove", id)
+                        msg.info("Removed " .. filename .. " from playlist")
+                    end
+                end
+                return
+            end
+
+            if err then
+                msg.error("Failed to call ffprobe -- ", err)
+                return
+            end
+
+            msg.error("Failed to resolve metadata for " .. filename .. " Error: " .. (res.error or "unknown"))
+        end
+    )
+end
+
 mp.observe_property("playlist-count", "number", function(_, plcount)
     --if we promised to listen and sort on playlist size increase do it
     if settings.sort_playlist_on_file_add and (plcount > plen) then
@@ -1684,7 +1887,7 @@ function local_fetching_throttler()
     end
 end
 
-function resolve_metadata()
+local function resolve_metadata()
     if not settings.resolve_playtime_duration and not settings.resolve_video_resolution then return end
 
     local length = mp.get_property_number("playlist-count", 0)
@@ -1709,200 +1912,6 @@ function resolve_metadata()
     if added then
         local_fetching_throttler()
     end
-end
-
-function resolve_titles()
-    if settings.prefer_titles == "none" then return end
-    if not settings.resolve_url_titles and not settings.resolve_local_titles then return end
-
-    local length = mp.get_property_number("playlist-count", 0)
-    if length < 2 then return end
-    -- loop all items in playlist because we can't predict how it has changed
-    local added_urls = false
-    local added_local = false
-    for i = 0, length - 1, 1 do
-        local filename = mp.get_property("playlist/" .. i .. "/filename")
-        local title = mp.get_property("playlist/" .. i .. "/title")
-        if i ~= pos
-            and filename
-            and not title
-            and not title_table[filename]
-            and not requested_titles[filename]
-        then
-            requested_titles[filename] = true
-            if filename:match("^https?://") and settings.resolve_url_titles then
-                url_titles_to_fetch.push(filename)
-                added_urls = true
-            elseif settings.prefer_titles == "all" and settings.resolve_local_titles then
-                local fetch_params = {
-                    file = filename,
-                    data_type = "title"
-                }
-                local_ffprobe_fetch.push(fetch_params)
-                added_local = true
-            end
-        end
-    end
-    if added_urls then
-        url_title_fetch_timer:resume()
-    end
-    if added_local then
-        local_fetching_throttler()
-    end
-end
-
-function resolve_ytdl_title(filename)
-    local args = {
-        settings.youtube_dl_executable,
-        "--no-playlist",
-        "--flat-playlist",
-        "-sJ",
-        "--no-config",
-        filename,
-    }
-    local req = mp.command_native_async(
-        {
-            name = "subprocess",
-            args = args,
-            playback_only = false,
-            capture_stdout = true
-        },
-        function(success, res)
-            ongoing_url_requests[filename] = false
-            if res.killed_by_us then
-                msg.verbose("Request to resolve url title " .. filename .. " timed out")
-                return
-            end
-            if res.status == 0 then
-                local json, err = utils.parse_json(res.stdout)
-                if not err then
-                    local is_playlist = json["_type"] and json["_type"] == "playlist"
-                    local title = (is_playlist and "[playlist]: " or "") .. json["title"]
-                    msg.verbose(filename .. " resolved to '" .. title .. "'")
-                    title_table[filename] = title
-                    mp.set_property_native("user-data/playlist-manager/titles", title_table)
-                    refresh_ui()
-                else
-                    msg.error("Failed parsing json, reason: " .. (err or "unknown"))
-                end
-            else
-                msg.error("Failed to resolve url title " .. filename .. " Error: " .. (res.error or "unknown"))
-            end
-        end
-    )
-
-    mp.add_timeout(
-        settings.resolve_title_timeout,
-        function()
-            mp.abort_async_command(req)
-            ongoing_url_requests[filename] = false
-        end
-    )
-end
-
-function resolve_ffprobe_title(filename)
-    local args = { "ffprobe", "-hide_banner", "-show_format", "-show_entries", "format=tags", "-loglevel", "quiet",
-        filename }
-    local req = mp.command_native_async(
-        {
-            name = "subprocess",
-            args = args,
-            playback_only = false,
-            capture_stdout = true
-        },
-        function(success, res)
-            ongoing_local_request = false
-            local_fetching_throttler()
-            if res.killed_by_us then
-                msg.verbose("Request to resolve local title " .. filename .. " timed out")
-                return
-            end
-            if res.status == 0 then
-                local title = string.match(res.stdout, "title=([^\n\r]+)")
-                if title then
-                    msg.verbose(filename .. " resolved to '" .. title .. "'")
-                    title_table[filename] = title
-                    mp.set_property_native("user-data/playlist-manager/titles", title_table)
-                    refresh_ui()
-                end
-            else
-                msg.error("Failed to resolve local title " .. filename .. " Error: " .. (res.error or "unknown"))
-            end
-        end
-    )
-end
-
-function resolve_ffprobe_metadata(id, filename)
-    local args = { "ffprobe", "-hide_banner", "-show_entries", "stream=width,height", "-show_entries", "format=duration",
-        "-sexagesimal", "-loglevel", "error", filename }
-    local req = mp.command_native_async(
-        {
-            name = "subprocess",
-            args = args,
-            playback_only = false,
-            capture_stdout = true,
-            capture_stderr = true
-        },
-        function(success, res, err)
-            ongoing_local_request = false
-            local_fetching_throttler()
-
-            if res.killed_by_us then
-                msg.error("Request to get duration for " .. filename .. " timed out")
-                return
-            end
-
-            if res.status == 0 and success == true then
-                local duration = string.match(res.stdout, "duration=([^\n\r.]+)")
-                local width = string.match(res.stdout, "width=([^\n\r.]+)")
-                local height = string.match(res.stdout, "height=([^\n\r.]+)")
-                duration = duration and duration or 0
-                width = tonumber(width and width or 0)
-                height = tonumber(height and height or 0)
-
-                msg.verbose("Metadata -- Resolution=[" ..
-                    width .. "x" .. height .. "] Duration=[" .. duration .. "] File=[" .. filename .. "]")
-
-                -- local width = string.match(res.stdout, "width=([^\n\r.]+)")
-                -- local resolution = string.format("%4sp", height) -- width .. "x" .. height
-
-                local resolution = resolution_labels["not_found"]
-				if height < 720 then resolution = resolution_labels["sd"]
-				elseif height < 1080 then resolution = resolution_labels["hd"]
-				elseif height < 1440 then resolution = resolution_labels["fhd"]
-				elseif height < 2160 then resolution = resolution_labels["qhd"]
-				elseif height >= 2160 then resolution = resolution_labels["uhd"]
-				end
-
-                metadata_table[filename] = {
-                    duration = duration,
-                    resolution = resolution
-                }
-                refresh_ui()
-
-
-                return
-            end
-
-            if res.status ~= 0 then
-                msg.error("ffprobe failed with stderr for " .. filename .. " -- " .. res.stderr)
-                if string.find(res.stderr, "No such file or directory") ~= nil and settings.remove_file_not_found then
-                    if filename == mp.get_property("playlist/" .. id .. "/filename") then
-                        mp.commandv("playlist-remove", id)
-						msg.info("Removed " .. filename .. " from playlist")
-                    end
-                end
-                return
-            end
-
-            if err then
-                msg.error("Failed to call ffprobe -- ", err)
-                return
-            end
-
-            msg.error("Failed to resolve metadata for " .. filename .. " Error: " .. (res.error or "unknown"))
-        end
-    )
 end
 
 --script message handler
