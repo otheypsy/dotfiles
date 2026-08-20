@@ -71,11 +71,12 @@ function utils.file_info(path) end
 -- Split a path into directory component and filename component, and return
 -- them. The first return value is always the directory. The second return
 -- value is the trailing part of the path, the directory entry.
---- @return string[]
+--- @return string,string
 function utils.split_path(path) end
 
 -- Return the concatenation of the 2 paths. Tries to be clever. For example,
 -- if `p2` is an absolute path, `p2` is returned without change.
+--- @return string path
 function utils.join_path(p1, p2) end
 
 -- Runs an external process and waits until it exits. Returns process status
