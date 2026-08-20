@@ -14,10 +14,18 @@ local pending_hooks = {}          -- as set (keys only, meaningless values)
 local current_profile = nil
 
 -- Cached set of all top-level mpv properties. Only used for extra validation.
+local function get_property_list()
+    local property_list = mp.get_property_native("property-list")
 local property_set = {}
-for _, property in pairs(mp.get_property_native("property-list")) do
+    if property_list then
+        for _, property in pairs(property_list) do
     property_set[property] = true
 end
+    end
+    return property_set
+end
+local property_set = get_property_list()
+
 
 local function evaluate(profile)
     msg.verbose("Re-evaluating auto profile " .. profile.name)
@@ -101,7 +109,7 @@ local function on_hook(h)
     pending_hooks[h] = true
 end
 
-function get(name, default)
+local function get_property_custom(name, default)
     -- Normally, we use the cached value only
     if not watched_properties[name] then
         watched_properties[name] = true
@@ -138,7 +146,7 @@ local function magic_get(name)
     -- Lua identifiers can't contain "-", so in order to match with mpv
     -- property conventions, replace "_" to "-"
     name = string.gsub(name, "_", "-")
-    return get(name, nil)
+    return get_property_custom(name, nil)
 end
 
 local evil_magic = {}
@@ -154,7 +162,7 @@ setmetatable(evil_magic, {
     end,
 })
 
-p = {}
+local p = {}
 setmetatable(p, {
     __index = function(_, key)
         return magic_get(key)
