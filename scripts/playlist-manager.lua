@@ -828,9 +828,11 @@ local peek_display_timer = nil
 local peek_button_pressed = false
 
 function peek_timeout()
-    peek_display_timer:kill()
-    if not peek_button_pressed and not playlist_visible then
-        remove_keybinds()
+    if peek_display_timer then
+        peek_display_timer:kill()
+        if not peek_button_pressed and not playlist_visible then
+            remove_keybinds()
+        end
     end
 end
 
@@ -860,7 +862,7 @@ function handle_complex_playlist_toggle(table)
 
         if settings.peek_respect_display_timeout then
             peek_button_pressed = false
-            if not peek_display_timer:is_enabled() then
+            if peek_display_timer and not peek_display_timer:is_enabled() then
                 mp.add_timeout(0.01, remove_keybinds_after_timeout)
             end
         else
@@ -1325,8 +1327,10 @@ function select_playlist()
     end
 
     local playlists = {}
-    for index, file in pairs(files) do
-        table.insert(playlists, file)
+    if files then
+        for _, file in pairs(files) do
+            table.insert(playlists, file)
+        end
     end
 
     input.select({
@@ -1364,7 +1368,7 @@ function save_playlist(filename)
         local unix_args = { "mkdir", savepath }
         local args = settings.system == "windows" and windows_args or unix_args
         local res = utils.subprocess({ args = args, cancellable = false })
-        if res.status ~= 0 then
+        if res and res.status ~= 0 then
             msg.error("Failed to create playlist save directory " .. savepath .. ". Error: " .. (res.error or "unknown"))
             return
         end
@@ -1423,7 +1427,7 @@ end
 -- fast sort algo from https://github.com/zsugabubus/dotfiles/blob/master/.config/mpv/scripts/playlist-filtersort.lua
 function sortplaylist(startover)
     local playlist = mp.get_property_native("playlist")
-    if #playlist < 2 then return end
+    if not playlist or #playlist < 2 then return end
 
     local order = {}
     for i = 1, #playlist do
@@ -1611,106 +1615,6 @@ if settings.loadfiles_on_idle_start and mp.get_property_number("playlist-count",
     playlist()
 end
 
-mp.observe_property("playlist-count", "number", function(_, plcount)
-    --if we promised to listen and sort on playlist size increase do it
-    if settings.sort_playlist_on_file_add and (plcount > plen) then
-        msg.info("Added files will be automatically sorted")
-        refresh_globals()
-        sortplaylist()
-    end
-    refresh_ui()
-    resolve_titles()
-    resolve_metadata()
-end)
-mp.observe_property("osd-dimensions", "native", refresh_ui)
-
-
-url_request_queue = {}
-function url_request_queue.push(item) table.insert(url_request_queue, item) end
-
-function url_request_queue.pop() return table.remove(url_request_queue, 1) end
-
-local url_titles_to_fetch = url_request_queue
-local ongoing_url_requests = {}
-
-function url_fetching_throttler()
-    if #url_titles_to_fetch == 0 then
-        url_title_fetch_timer:kill()
-    end
-
-    local ongoing_url_requests_count = 0
-    for _, ongoing in pairs(ongoing_url_requests) do
-        if ongoing then
-            ongoing_url_requests_count = ongoing_url_requests_count + 1
-        end
-    end
-
-    -- start resolving some url titles if there is available slots
-    local amount_to_fetch = math.max(0, settings.concurrent_title_resolve_limit - ongoing_url_requests_count)
-    for index = 1, amount_to_fetch, 1 do
-        local file = url_titles_to_fetch.pop()
-        if file then
-            ongoing_url_requests[file] = true
-            resolve_ytdl_title(file)
-        end
-    end
-end
-
-url_title_fetch_timer = mp.add_periodic_timer(0.1, url_fetching_throttler)
-url_title_fetch_timer:kill()
-
-local_request_queue = {}
-function local_request_queue.push(item) table.insert(local_request_queue, item) end
-
-function local_request_queue.pop() return table.remove(local_request_queue, 1) end
-
-local local_ffprobe_fetch = local_request_queue
-local ongoing_local_request = false
-
-function local_fetching_throttler()
-    if not ongoing_local_request then
-        local item = local_ffprobe_fetch.pop()
-        if not item then return end
-
-        if item["data_type"] == "title" then
-            ongoing_local_request = true
-            resolve_ffprobe_title(item["file"])
-        end
-
-        if item["data_type"] == "metadata" then
-            ongoing_local_request = true
-            resolve_ffprobe_metadata(item["id"], item["file"])
-        end
-    end
-end
-
-function resolve_metadata()
-    if not settings.resolve_playtime_duration and not settings.resolve_video_resolution then return end
-
-    local length = mp.get_property_number("playlist-count", 0)
-    if length < 1 then return end
-
-    local added = false
-    for i = 0, length - 1, 1 do
-        local filename = mp.get_property("playlist/" .. i .. "/filename")
-        local ext = filename:match("%.([^%.]+)$")
-
-        if ext and filetype_lookup[ext:lower()] and not metadata_table[filename] then
-            added = true
-            local fetch_params = {
-                id = i,
-                file = filename,
-                data_type = "metadata"
-            }
-            local_ffprobe_fetch.push(fetch_params)
-        end
-    end
-
-    if added then
-        local_fetching_throttler()
-    end
-end
-
 function resolve_titles()
     if settings.prefer_titles == "none" then return end
     if not settings.resolve_url_titles and not settings.resolve_local_titles then return end
@@ -1751,7 +1655,7 @@ function resolve_titles()
     end
 end
 
-function resolve_ytdl_title(filename)
+local function resolve_ytdl_title(filename)
     local args = {
         settings.youtube_dl_executable,
         "--no-playlist",
@@ -1800,7 +1704,7 @@ function resolve_ytdl_title(filename)
     )
 end
 
-function resolve_ffprobe_title(filename)
+local function resolve_ffprobe_title(filename)
     local args = { "ffprobe", "-hide_banner", "-show_format", "-show_entries", "format=tags", "-loglevel", "quiet",
         filename }
     local req = mp.command_native_async(
@@ -1832,7 +1736,7 @@ function resolve_ffprobe_title(filename)
     )
 end
 
-function resolve_ffprobe_metadata(id, filename)
+local function resolve_ffprobe_metadata(id, filename)
     local args = { "ffprobe", "-hide_banner", "-show_entries", "stream=width,height", "-show_entries", "format=duration",
         "-sexagesimal", "-loglevel", "error", filename }
     local req = mp.command_native_async(
@@ -1908,6 +1812,106 @@ function resolve_ffprobe_metadata(id, filename)
             msg.error("Failed to resolve metadata for " .. filename .. " Error: " .. (res.error or "unknown"))
         end
     )
+end
+
+mp.observe_property("playlist-count", "number", function(_, plcount)
+    --if we promised to listen and sort on playlist size increase do it
+    if settings.sort_playlist_on_file_add and (plcount > plen) then
+        msg.info("Added files will be automatically sorted")
+        refresh_globals()
+        sortplaylist()
+    end
+    refresh_ui()
+    resolve_titles()
+    resolve_metadata()
+end)
+mp.observe_property("osd-dimensions", "native", refresh_ui)
+
+
+url_request_queue = {}
+function url_request_queue.push(item) table.insert(url_request_queue, item) end
+
+function url_request_queue.pop() return table.remove(url_request_queue, 1) end
+
+local url_titles_to_fetch = url_request_queue
+local ongoing_url_requests = {}
+
+function url_fetching_throttler()
+    if #url_titles_to_fetch == 0 then
+        url_title_fetch_timer:kill()
+    end
+
+    local ongoing_url_requests_count = 0
+    for _, ongoing in pairs(ongoing_url_requests) do
+        if ongoing then
+            ongoing_url_requests_count = ongoing_url_requests_count + 1
+        end
+    end
+
+    -- start resolving some url titles if there is available slots
+    local amount_to_fetch = math.max(0, settings.concurrent_title_resolve_limit - ongoing_url_requests_count)
+    for index = 1, amount_to_fetch, 1 do
+        local file = url_titles_to_fetch.pop()
+        if file then
+            ongoing_url_requests[file] = true
+            resolve_ytdl_title(file)
+        end
+    end
+end
+
+url_title_fetch_timer = mp.add_periodic_timer(0.1, url_fetching_throttler)
+url_title_fetch_timer:kill()
+
+local_request_queue = {}
+function local_request_queue.push(item) table.insert(local_request_queue, item) end
+
+function local_request_queue.pop() return table.remove(local_request_queue, 1) end
+
+local local_ffprobe_fetch = local_request_queue
+local ongoing_local_request = false
+
+function local_fetching_throttler()
+    if not ongoing_local_request then
+        local item = local_ffprobe_fetch.pop()
+        if not item then return end
+
+        if item["data_type"] == "title" then
+            ongoing_local_request = true
+            resolve_ffprobe_title(item["file"])
+        end
+
+        if item["data_type"] == "metadata" then
+            ongoing_local_request = true
+            resolve_ffprobe_metadata(item["id"], item["file"])
+        end
+    end
+end
+
+local function resolve_metadata()
+    if not settings.resolve_playtime_duration and not settings.resolve_video_resolution then return end
+
+    local length = mp.get_property_number("playlist-count", 0)
+    if length < 1 then return end
+
+    local added = false
+    for i = 0, length - 1, 1 do
+        local filename = mp.get_property("playlist/" .. i .. "/filename")
+        local ext = filename:match("%.([^%.]+)$")
+
+        if ext and filetype_lookup[ext:lower()] and not metadata_table[filename] then
+            added = true
+            local fetch_params = {
+                id = i,
+                file = filename,
+                data_type = "metadata"
+            }
+            local_ffprobe_fetch.push(fetch_params)
+        end
+    end
+
+    if added then
+        local_fetching_throttler()
+    end
 end
 
 --script message handler
