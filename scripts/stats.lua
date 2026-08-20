@@ -469,7 +469,7 @@ local function append_perfdata(header, s, dedicated_page)
             s[#s + 1] = format(
                 "%s%s%s%s%s%s%s%s%s%s",
                 o.nl, o.indent, o.indent, o.indent, o.indent, o.prefix_sep, o.prefix_sep, "  ",
-                bold("Total >>>  "),
+                bold("Total \u{203A}\u{203A}\u{203A}  "),
                 bold(pp(last_s[frame])) .. " | " .. bold(pp(avg_s[frame])) .. " | " .. bold(pp(peak_s[frame]))
             )
         else
