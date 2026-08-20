@@ -3,7 +3,7 @@
 # New-Item -ItemType Junction     -Path "<<link_file>>" -Target "<<source_file>>"
 
 # --- Oh-my-Posh Config --- #
-oh-my-posh init pwsh --config ~/.oh-my-posh/themes/powerlevel10k_lean.omp.json | Invoke-Expression
+oh-my-posh init pwsh --config ~/.oh-my-posh/themes/multiverse-neon.omp.json | Invoke-Expression
 
 # --- QOL --- #
 Import-Module -Name Terminal-Icons
@@ -24,7 +24,14 @@ function .. { Set-Location .. }
 function ... { Set-Location ..\.. }
 function cls { Clear-Host }
 
+# --- Prefix Timestamp Filter --- #
+function timestamp { 
+	Process { "$(Get-Date): $_" } 
+}
+
+# ------------------------ #
 # --- Input Components --- #
+# ------------------------ #
 function Read-SelectionInput {
 	param (
 		[string[]]$Options = @("Option 1", "Option 2", "Option 3"),
@@ -51,7 +58,11 @@ function Read-SelectionInput {
 	return [string]$Options[$Current]
 }
 
+
+# -------------- #
 # --- ffmpeg --- #
+# -------------- #
+
 <#
 .SYNOPSIS
     Join video files 
@@ -81,6 +92,11 @@ function Join-Video {
 	Remove-Item -Path "parts.txt"
 }
 
+
+# -------------- #
+# --- yt-dlp --- #
+# -------------- #
+
 <#
 .SYNOPSIS
     Download videos using yt-dlp
@@ -92,9 +108,8 @@ function Join-Video {
 .PARAMETER
     Source video url
 #>
-# --- yt-dlp --- #
-Set-Alias -Name 'ytd' -Value 'YT-Download'
-function YT-Download {
+Set-Alias -Name 'ytd' -Value 'Invoke-YT-Download'
+function Invoke-YT-Download {
 	[CmdletBinding()] 
 	
 	param (
