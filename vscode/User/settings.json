@@ -102,7 +102,6 @@
     "npm.scriptRunner": "yarn",
     "prettier.bracketSameLine": true,
     "prettier.printWidth": 120,
-    "prettier.requireConfig": true,
     "prettier.semi": false,
     "prettier.singleAttributePerLine": true,
     "prettier.singleQuote": true,
