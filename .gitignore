@@ -1,0 +1,6 @@
+*.log
+.vscode
+
+/playlists/
+/inactive/
+settings.xml
