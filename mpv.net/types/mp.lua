@@ -1,4 +1,4 @@
----@meta
+---@meta [mp]
 mp = mp
 
 -- # mp functions
