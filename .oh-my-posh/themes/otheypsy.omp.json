@@ -19,7 +19,7 @@
                     "options": {
                         "always_enabled": true
                     },
-                    "template": "{{ if eq .Code 0 }}\n  [ \uf00c  Success ]\n{{ end }}"
+                    "template": "{{ if and (.Executed) (eq .Code 0) }}\n  \u29fc\u29fc Success \u29fd\u29fd \n{{ end }}"
                 },
                 {
                     "type": "status",
@@ -28,7 +28,7 @@
                     "options": {
                         "always_enabled": true
                     },
-                    "template": "{{ if ne .Code 0 }}\n  [ \uf071  {{ reason .Code }} ]\n{{ end }}"
+                    "template": "{{ if and (.Executed) (ne .Code 0) }}\n  \u29fc\u29fc {{ reason .Code }} \u29fd\u29fd \n{{ end }}"
                 }
             ],
             "type": "prompt"
@@ -40,14 +40,12 @@
                 {
                     "type": "text",
                     "style": "plain",
-                    "foreground": "#ffDa6a",
-                    "template": "\u256d\u2500\u007c "
+                    "template": "{{ if .Root }}<#ea868f>{{else}}<#906cff>{{end}}\u256d\u2500\u2b58</>  "
                 },
                 {
                     "type": "time",
                     "style": "diamond",
-                    "foreground": "#ffDa6a",
-                    "trailing_diamond": "  \u276f\u276f  ",
+                    "foreground": "#ffda6a",
                     "options": {
                         "time_format": "15:04:05"
                     },
@@ -56,8 +54,8 @@
                 {
                     "type": "path",
                     "style": "diamond",
-                    "foreground": "#3EC669",
-                    "trailing_diamond": "  \u276f\u276f  ",
+                    "foreground": "#3ec669",
+                    "leading_diamond": "<#a7acb1>  \u2771\u2771  </>",
                     "options": {
                         "style": "full"
                     },
@@ -67,7 +65,7 @@
                     "type": "git",
                     "style": "diamond",
                     "foreground": "#43CCEA",
-                    "trailing_diamond": "  \u276f\u276f  ",
+                    "leading_diamond": "<#a7acb1>  \u2771\u2771  </>",
                     "options": {
                         "branch_template": "{{ trunc 25 .Branch }}",
                         "fetch_status": true,
@@ -85,18 +83,18 @@
                     "type": "node",
                     "style": "diamond",
                     "foreground": "#88e570",
-                    "trailing_diamond": "  \u276f\u276f  ",
+                    "leading_diamond": "<#a7acb1>  \u2771\u2771  </>",
                     "options": {
                         "display_mode": "files",
                         "fetch_version": true
                     },
-                    "template": "\ue718 {{ .Full }}]"
+                    "template": "\ue718 {{ .Full }}"
                 },
                 {
                     "type": "node",
                     "style": "diamond",
-                    "foreground": "#37aee5",
-                    "trailing_diamond": "  \u276f\u276f  ",
+                    "foreground": "#6edff6",
+                    "leading_diamond": "<#a7acb1>  \u2771\u2771  </>",
                     "options": {
                         "display_mode": "files",
                         "fetch_package_manager": true
@@ -106,8 +104,8 @@
                 {
                     "type": "python",
                     "style": "diamond",
-                    "foreground": "#FED142",
-                    "trailing_diamond": "  \u276f\u276f  ",
+                    "foreground": "#6edff6",
+                    "leading_diamond": "<#a7acb1>  \u2771\u2771  </>",
                     "options": {
                         "display_mode": "context",
                         "fetch_virtual_env": false
@@ -117,20 +115,20 @@
                 {
                     "type": "upgrade",
                     "style": "diamond",
-                    "foreground": "#FFD664",
-                    "trailing_diamond": "  \u276f\u276f  ",
+                    "foreground": "#da627d",
+                    "leading_diamond": "<#a7acb1>  \u2771\u2771  </>",
                     "options": {
-                        "cache_duration": "168h"
+                        "cache_duration": "48h"
                     },
                     "template": "{{ if ne .Current .Latest }}\uf019 oh-my-posh {{ .Latest }}{{ end }}"
                 },
                 {
                     "type": "winget",
                     "style": "diamond",
-                    "foreground": "#FFD664",
-                    "trailing_diamond": "  \u276f\u276f  ",
+                    "foreground": "#da627d",
+                    "leading_diamond": "<#a7acb1>  \u2771\u2771  </>",
                     "options": {
-                        "cache_duration": "168h"
+                        "cache_duration": "24h"
                     },
                     "cache": {
                         "duration": "24h",
@@ -142,18 +140,25 @@
             "type": "prompt"
         },
         {
-            "alignment": "left",
             "newline": true,
+            "alignment": "left",
             "segments": [
                 {
-                    "foreground": "#ffDa6a",
                     "style": "plain",
-                    "template": "\u2570\u2500{{ if .Root }}\u276f{{else}}\u276f{{end}} ",
+                    "template": "{{ if .Root }}<#ea868f>{{else}}<#906cff>{{end}}\u2570\u2500\u2771</>  ",
                     "type": "text"
                 }
             ],
             "type": "prompt"
         }
     ],
+    "valid_line": {
+        "style": "plain",
+        "template": "<#3ec669>\u2771 </>"
+    },
+    "error_line": {
+        "style": "plain",
+        "template": "<#ea868f>\u2771 </>"
+    },
     "version": 4
 }
