@@ -1,33 +1,33 @@
 {
     "[ignore]": {},
     "[css]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
     },
     "[html]": {
         "editor.defaultFoldingRangeProvider": "esbenp.prettier-vscode",
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "prettier.bracketSameLine": true,
-        "prettier.singleAttributePerLine": true
+        "prettier.singleAttributePerLine": true,
     },
     "[javascript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
     },
     "[json]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
     },
     "[lua]": {
         "editor.defaultFormatter": "sumneko.lua",
-        "editor.formatOnSave": true
+        "editor.formatOnSave": true,
     },
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter",
-        "editor.formatOnSave": true
+        "editor.formatOnSave": true,
     },
     "[typescript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
     },
     "[typescriptreact]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
     },
     "black-formatter.args": ["--line-length=120"],
     "black-formatter.showNotifications": "onWarning",
@@ -66,7 +66,7 @@
         "*.ts": "${capture}.d.ts, ${capture}.js",
         "*.tsx": "${capture}.ts, ${capture}*.scss, ${capture}*.css",
         "eslint.config.ts": "*lint.config.ts, prettier.config.ts",
-        "package.json": "package-lock.json, yarn.lock, .yarnrc.yml, pnpm-lock.yaml, bun.lockb, bun.lock"
+        "package.json": "package-lock.json, yarn.lock, .yarnrc.yml, pnpm-lock.yaml, bun.lockb, bun.lock",
     },
     "explorer.openEditors.minVisible": 5,
     "explorer.openEditors.sortOrder": "alphabetical",
@@ -76,7 +76,6 @@
     "files.eol": "\n",
     "files.insertFinalNewline": true,
     "files.trimFinalNewlines": true,
-    "git.autofetch": true,
     "git.enableSmartCommit": true,
     "html.format.indentHandlebars": true,
     "html.format.indentInnerHtml": true,
@@ -94,13 +93,13 @@
         "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json": true,
         "https://raw.githubusercontent.com/microsoft/vscode/": true,
         "https://schemastore.azurewebsites.net/": true,
-        "https://www.schemastore.org/": true
+        "https://www.schemastore.org/": true,
     },
     "less.format.spaceAroundSelectorSeparator": true,
     "Lua.format.defaultConfig": {
         "indent_size": "4",
         "indent_style": "space",
-        "quote_style": "double"
+        "quote_style": "double",
     },
     "markdown-mermaid.darkModeTheme": "dark",
     "markdown-mermaid.lightModeTheme": "dark",
@@ -134,24 +133,21 @@
         "Command Prompt": {
             "args": [],
             "icon": "terminal-cmd",
-            "path": [
-                "${env:windir}\\Sysnative\\cmd.exe",
-                "${env:windir}\\System32\\cmd.exe"
-            ]
+            "path": ["${env:windir}\\Sysnative\\cmd.exe", "${env:windir}\\System32\\cmd.exe"],
         },
         "Git Bash": {
             "icon": "terminal-git-bash",
-            "source": "Git Bash"
+            "source": "Git Bash",
         },
         "PowerShell": {
             "args": [],
             "icon": "terminal-powershell",
-            "path": "pwsh.exe"
-        }
+            "path": "pwsh.exe",
+        },
     },
     "terminal.integrated.suggest.inlineSuggestion": "alwaysOnTopExceptExactMatch",
     "terminal.integrated.suggest.providers": {
-        "lsp": true
+        "lsp": true,
     },
     "terminal.integrated.suggest.suggestOnTriggerCharacters": true,
     "terminal.integrated.tabs.defaultColor": "terminal.ansiBlack",
@@ -178,12 +174,15 @@
         "settings.modifiedItemForeground": "#FFA000",
         "settings.modifiedItemIndicator": "#FFA000",
         "tab.activeBorder": "#FFA000",
-        "textLink.foreground": "#FFA000"
+        "textLink.foreground": "#FFA000",
     },
     "workbench.experimental.modernUI": true,
     "workbench.externalBrowser": "chrome",
     "workbench.preferredHighContrastLightColorTheme": "Default High Contrast",
     "workbench.preferredLightColorTheme": "Dark 2026",
     "workbench.secondarySideBar.defaultVisibility": "hidden",
-    "workbench.tree.indent": 25
+    "workbench.tree.indent": 25,
+    "git.autoStash": true,
+    "git.blame.editorDecoration.enabled": true,
+    "git.inputValidation": true,
 }

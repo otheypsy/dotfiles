@@ -10,5 +10,5 @@ New-Item -ItemType Junction     -Path "<<link_file>>" -Target "<<source_file>>"
 ## FFMPEG
 
 ```
-
+ffmpeg -f concat -safe 0 -i "<<parts_txt>>" -c copy "<<output_file>>"
 ```

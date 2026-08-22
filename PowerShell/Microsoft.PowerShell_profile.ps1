@@ -1,16 +1,14 @@
-# --- Commands --- #
-# New-Item -ItemType SymbolicLink -Path "<<link_file>>" -Target "<<source_file>>"
-# New-Item -ItemType Junction     -Path "<<link_file>>" -Target "<<source_file>>"
-
-# --- Oh-my-Posh Config --- #
+# --- oh-my-posh Config --- #
 oh-my-posh init pwsh --config ~/.oh-my-posh/themes/otheypsy.omp.json | Invoke-Expression
 
 # --- QOL --- #
 Import-Module -Name Terminal-Icons
-Import-Module PSReadLine
+Import-Module -Name PSReadLine
 Set-PSReadLineOption -PredictionSource HistoryAndPlugin
+Set-PSReadLineOption -ExtraPromptLineCount 4
 Set-PSReadLineOption -PredictionViewStyle ListView
 Set-PSReadLineOption -EditMode Windows
+Import-Module -Name CompletionPredictor
 
 # --- PowerToys CommandNotFound --- #
 Import-Module -Name Microsoft.WinGet.CommandNotFound
@@ -122,6 +120,7 @@ function Invoke-YT-Download {
 		$url = Read-Host "Enter video URL"
 	}
 
+    $format = 'mp4'
 	$output = Read-Host "Enter name for output [Default: `%(title)s`]"
 	if($output -eq "") {
 		$output = "%(title)s"
@@ -135,17 +134,13 @@ function Invoke-YT-Download {
 		'--merge-output-format=mp4'
 		'--concurrent-fragments=16',
 		'--impersonate=chrome',
-		'--downloader-args="aria2c: --continue --min-split-size=1M --max-connection-per-server=16 --max-concurrent-downloads=16 --split=16"',
 		'--extractor-args=generic:impersonate'
 	)
 	if($ext -eq $true) {
 		$splat += '--downloader=aria2c'
+		$splat += '--downloader-args="aria2c: --continue --min-split-size=1M --max-connection-per-server=16 --max-concurrent-downloads=16 --split=16"'
 	}
 
-	yt-dlp $splat
+	yt-dlp $splat -o "$output.$format"
 
 }
-#f45873b3-b655-43a6-b217-97c00aa0db58 PowerToys CommandNotFound module
-
-Import-Module -Name Microsoft.WinGet.CommandNotFound
-#f45873b3-b655-43a6-b217-97c00aa0db58
