@@ -3,7 +3,7 @@
 # New-Item -ItemType Junction     -Path "<<link_file>>" -Target "<<source_file>>"
 
 # --- Oh-my-Posh Config --- #
-oh-my-posh init pwsh --config ~/.oh-my-posh/themes/multiverse-neon.omp.json | Invoke-Expression
+oh-my-posh init pwsh --config ~/.oh-my-posh/themes/otheypsy.omp.json | Invoke-Expression
 
 # --- QOL --- #
 Import-Module -Name Terminal-Icons
@@ -25,8 +25,8 @@ function ... { Set-Location ..\.. }
 function cls { Clear-Host }
 
 # --- Prefix Timestamp Filter --- #
-function timestamp { 
-	Process { "$(Get-Date): $_" } 
+function timestamp {
+	Process { "$(Get-Date): $_" }
 }
 
 # ------------------------ #
@@ -65,7 +65,7 @@ function Read-SelectionInput {
 
 <#
 .SYNOPSIS
-    Join video files 
+    Join video files
 .DESCRIPTION
     A script that uses ffpmeg to join all video files from the current folder. All files must be of the same type (mp4 or mkv)
 .NOTES
@@ -74,20 +74,20 @@ function Read-SelectionInput {
 #>
 Set-Alias -Name 'jvideo' -Value 'Join-Video'
 function Join-Video {
-	
+
 	$prompt = "Select video format"
 	$formats = @("mp4", "mkv")
 	$format = Read-SelectionInput -Prompt $prompt -Options $formats -Current 0
 	$output = Read-Host "Enter name for output video [Default: output]"
-	if($output -eq "") { $output = "output" }		
-	
+	if($output -eq "") { $output = "output" }
+
 	New-Item -Path "parts.txt" -ItemType "File" -Force | Out-Null
 	$parts = Get-ChildItem -File -Filter *.mp4 | Sort-Object CreationTime
 	foreach ($part in $parts) {
 		$partEntry = "file '" + $part.Name + "'"
 		Add-Content -Path "parts.txt" -Value $partEntry
 	}
-	
+
 	ffmpeg -f concat -safe 0 -i "parts.txt" -c copy "$output.$format"
 	Remove-Item -Path "parts.txt"
 }
@@ -110,23 +110,23 @@ function Join-Video {
 #>
 Set-Alias -Name 'ytd' -Value 'Invoke-YT-Download'
 function Invoke-YT-Download {
-	[CmdletBinding()] 
-	
+	[CmdletBinding()]
+
 	param (
 		[Parameter(Position=0, Mandatory= $false)]
 		[String]$url,
 		[switch]$ext
 	)
-	
+
 	if($url -eq "") {
 		$url = Read-Host "Enter video URL"
 	}
-	
+
 	$output = Read-Host "Enter name for output [Default: `%(title)s`]"
 	if($output -eq "") {
 		$output = "%(title)s"
 	}
-	
+
 	$splat = @(
 		$url,
 		'--verbose',
@@ -141,9 +141,9 @@ function Invoke-YT-Download {
 	if($ext -eq $true) {
 		$splat += '--downloader=aria2c'
 	}
-	
+
 	yt-dlp $splat
-	
+
 }
 #f45873b3-b655-43a6-b217-97c00aa0db58 PowerToys CommandNotFound module
 
