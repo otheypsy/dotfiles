@@ -1,4 +1,5 @@
 {
+    "[ignore]": {},
     "[css]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
@@ -22,13 +23,13 @@
         "editor.defaultFormatter": "ms-python.black-formatter",
         "editor.formatOnSave": true
     },
-    "[typescript]": {},
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
     "[typescriptreact]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    "black-formatter.args": [
-        "--line-length=120"
-    ],
+    "black-formatter.args": ["--line-length=120"],
     "black-formatter.showNotifications": "onWarning",
     "chat.agent.enabled": false,
     "chat.checkpoints.enabled": false,
@@ -43,6 +44,7 @@
     "debug.breakpointsView.presentation": "tree",
     "debug.console.fontSize": 15,
     "editor.allowVariableFonts": false,
+    "editor.defaultFoldingRangeProvider": "esbenp.prettier-vscode",
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.definitionLinkOpensInPeek": true,
     "editor.detectIndentation": false,
@@ -55,6 +57,9 @@
     "editor.language.brackets": [],
     "editor.wordWrap": "on",
     "editor.wordWrapColumn": 120,
+    "eslint.onIgnoredFiles": "warn",
+    "eslint.trace.server": "off",
+    "eslint.validate": ["javascript", "typescript", "json"],
     "explorer.fileNesting.enabled": true,
     "explorer.fileNesting.patterns": {
         "*.js": "${capture}.d.ts, ${capture}.js.*, ${capture}.css, ${capture}.css.*, ${capture}.min.js",
@@ -73,12 +78,6 @@
     "files.trimFinalNewlines": true,
     "git.autofetch": true,
     "git.enableSmartCommit": true,
-    "github.copilot.enable": {
-        "*": false,
-        "markdown": false,
-        "plaintext": false,
-        "scminput": false
-    },
     "html.format.indentHandlebars": true,
     "html.format.indentInnerHtml": true,
     "html.format.wrapLineLength": 120,
@@ -87,6 +86,16 @@
     "js/ts.implicitProjectConfig.target": "ESNext",
     "js/ts.preferences.organizeImports": {},
     "js/ts.updateImportsOnFileMove.enabled": "always",
+    "json.schemaDownload.trustedDomains": {
+        "https://developer.microsoft.com/json-schemas/": true,
+        "https://json-schema.org/": true,
+        "https://json.schemastore.org/": true,
+        "https://raw.githubusercontent.com/devcontainers/spec/": true,
+        "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json": true,
+        "https://raw.githubusercontent.com/microsoft/vscode/": true,
+        "https://schemastore.azurewebsites.net/": true,
+        "https://www.schemastore.org/": true
+    },
     "less.format.spaceAroundSelectorSeparator": true,
     "Lua.format.defaultConfig": {
         "indent_size": "4",
@@ -114,6 +123,7 @@
     "terminal.integrated.cursorBlinking": true,
     "terminal.integrated.cursorStyle": "underline",
     "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "terminal.integrated.enableVisualBell": true,
     "terminal.integrated.env.windows": {},
     "terminal.integrated.fontFamily": "'SpaceMono Nerd Font', 'MesloLGM Nerd Font Mono'",
     "terminal.integrated.fontLigatures.enabled": true,
@@ -139,6 +149,11 @@
             "path": "pwsh.exe"
         }
     },
+    "terminal.integrated.suggest.inlineSuggestion": "alwaysOnTopExceptExactMatch",
+    "terminal.integrated.suggest.providers": {
+        "lsp": true
+    },
+    "terminal.integrated.suggest.suggestOnTriggerCharacters": true,
     "terminal.integrated.tabs.defaultColor": "terminal.ansiBlack",
     "window.systemColorTheme": "dark",
     "window.zoomLevel": 1,
