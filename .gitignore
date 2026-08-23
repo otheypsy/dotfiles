@@ -1,6 +1,6 @@
 *.log
 .vscode
 
-/playlists/
-/inactive/
+playlists
+inactive
 settings.xml
