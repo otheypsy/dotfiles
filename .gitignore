@@ -10,16 +10,3 @@ logs
 !.oh-my-posh/custom/themes/otheypsy.zsh-theme
 .oh-my-posh/*
 !.oh-my-posh/themes/otheypsy.omp.json
-
-# ---- MPV Configs ---- #
-mpv.net/*
-!mpv.net/custom
-!mpv.net/fonts
-!mpv.net/scripts
-!mpv.net/script-opts
-!mpv.net/shaders
-!mpv.net/types
-!mpv.net/input.conf
-!mpv.net/mpv.conf
-!mpv.net/mpvnet.conf
-!mpv.net/theme.conf

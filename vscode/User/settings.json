@@ -12,6 +12,15 @@
     "[javascript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
     },
+    "[javascriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+    },
     "[json]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
     },
@@ -22,12 +31,6 @@
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter",
         "editor.formatOnSave": true,
-    },
-    "[typescript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-    },
-    "[typescriptreact]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
     },
     "black-formatter.args": ["--line-length=120"],
     "black-formatter.showNotifications": "onWarning",
@@ -44,6 +47,9 @@
     "debug.breakpointsView.presentation": "tree",
     "debug.console.fontSize": 15,
     "editor.allowVariableFonts": false,
+    "editor.codeActionsOnSave": {
+        "source.fixAll": "explicit",
+    },
     "editor.defaultFoldingRangeProvider": "esbenp.prettier-vscode",
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.definitionLinkOpensInPeek": true,
@@ -96,11 +102,7 @@
         "https://www.schemastore.org/": true,
     },
     "less.format.spaceAroundSelectorSeparator": true,
-    "Lua.format.defaultConfig": {
-        "indent_size": "4",
-        "indent_style": "space",
-        "quote_style": "double",
-    },
+    "Lua.format.enable": true,
     "markdown-mermaid.darkModeTheme": "dark",
     "markdown-mermaid.lightModeTheme": "dark",
     "markdown.preview.fontFamily": "Roboto, 'Open Sans', system-ui, sans-serif",
@@ -117,6 +119,7 @@
     "python.analysis.autoFormatStrings": true,
     "scm.inputFontSize": 15,
     "scss.format.spaceAroundSelectorSeparator": true,
+    "stylelint.validate": ["css", "postcss", "scss", "javascriptreact", "typescriptreact"],
     "terminal.external.windowsExec": "wt",
     "terminal.integrated.confirmOnExit": "always",
     "terminal.integrated.cursorBlinking": true,
@@ -147,7 +150,7 @@
     },
     "terminal.integrated.suggest.inlineSuggestion": "alwaysOnTopExceptExactMatch",
     "terminal.integrated.suggest.providers": {
-        "lsp": true,
+        "lsp": false,
     },
     "terminal.integrated.suggest.suggestOnTriggerCharacters": true,
     "terminal.integrated.tabs.defaultColor": "terminal.ansiBlack",
@@ -183,6 +186,20 @@
     "workbench.secondarySideBar.defaultVisibility": "hidden",
     "workbench.tree.indent": 25,
     "git.autoStash": true,
-    "git.blame.editorDecoration.enabled": true,
     "git.inputValidation": true,
+    "css.validate": false,
+    "scss.validate": false,
+    "less.validate": false,
+    "stylelint.lintFiles.glob": "**/*.{css,scss,jsx,tsx}",
+    "stylelint.packageManager": "yarn",
+    "stylelint.reportNeedlessDisables": true,
+    "stylelint.reportInvalidScopeDisables": true,
+    "stylelint.reportDescriptionlessDisables": true,
+    "json.schemas": [
+        {
+            "fileMatch": ["package.json"],
+            "url": "https://www.schemastore.org/package.json",
+        },
+    ],
+    "diffEditor.ignoreTrimWhitespace": false,
 }
