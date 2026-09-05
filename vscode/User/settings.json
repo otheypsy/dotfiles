@@ -1,125 +1,261 @@
 {
-    "[ignore]": {},
-    "[css]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-    },
     "[html]": {
         "editor.defaultFoldingRangeProvider": "esbenp.prettier-vscode",
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "prettier.bracketSameLine": true,
-        "prettier.singleAttributePerLine": true,
+        "prettier.singleAttributePerLine": true
     },
     "[javascript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "[javascriptreact]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-    },
-    "[typescript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-    },
-    "[typescriptreact]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "[json]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "[lua]": {
         "editor.defaultFormatter": "sumneko.lua",
-        "editor.formatOnSave": true,
+        "editor.formatOnSave": true
     },
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter",
-        "editor.formatOnSave": true,
+        "editor.formatOnSave": true
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "black-formatter.args": ["--line-length=120"],
     "black-formatter.showNotifications": "onWarning",
     "chat.agent.enabled": false,
     "chat.checkpoints.enabled": false,
-    "chat.checkpoints.showFileChanges": true,
+    "chat.checkpoints.showFileChanges": false,
     "chat.disableAIFeatures": true,
     "chat.editor.fontSize": 15,
     "chat.editor.wordWrap": "on",
     "chat.fontSize": 15,
-    "cSpell.enabled": false,
+    "cSpell.customDictionaries": {
+        "custom-dictionary": {
+            "addWords": true,
+            "name": "custom-dictionary",
+            "path": "~/AppData/Roaming/Code/User/cspell-custom-dictionary.txt",
+            "scope": "workspace"
+        },
+        "custom": true
+    },
+    "cSpell.ignorePaths": [
+        "node_modules",
+        "**/node_modules",
+        "**/node_modules/**",
+        "vscode-extension",
+        ".git",
+        "*.dll",
+        "**/*.dll"
+    ],
     "cSpell.ignoreWords": [],
-    "css.format.spaceAroundSelectorSeparator": true,
+    "cSpell.languageSettings": [
+        {
+            "dictionaries": ["wordsEn"],
+            "languageId": "*",
+            "locale": "en"
+        },
+        {
+            "dictionaries": ["wordsEn"],
+            "languageId": "*",
+            "locale": "en-US"
+        },
+        {
+            "dictionaries": ["wordsEnGb"],
+            "languageId": "*",
+            "locale": "en-GB"
+        },
+        {
+            "dictionaries": ["companies", "softwareTerms", "misc"],
+            "languageId": "*"
+        },
+        {
+            "dictionaries": ["python"],
+            "languageId": "python"
+        },
+        {
+            "dictionaries": ["go"],
+            "languageId": "go"
+        },
+        {
+            "dictionaries": ["typescript", "node"],
+            "languageId": "javascript"
+        },
+        {
+            "dictionaries": ["typescript", "node"],
+            "languageId": "javascriptreact"
+        },
+        {
+            "dictionaries": ["typescript", "node"],
+            "languageId": "typescript"
+        },
+        {
+            "dictionaries": ["typescript", "node"],
+            "languageId": "typescriptreact"
+        },
+        {
+            "dictionaries": ["html", "fonts", "typescript", "css"],
+            "languageId": "html"
+        },
+        {
+            "dictionaries": ["php", "html", "fonts", "css", "typescript"],
+            "languageId": "php"
+        },
+        {
+            "dictionaries": ["fonts", "css"],
+            "languageId": "css"
+        },
+        {
+            "dictionaries": ["fonts", "css"],
+            "languageId": "less"
+        },
+        {
+            "dictionaries": ["fonts", "css"],
+            "languageId": "scss"
+        }
+    ],
     "debug.breakpointsView.presentation": "tree",
+    "debug.console.fontFamily": "'SpaceMono Nerd Font', 'MesloLGM Nerd Font Mono'",
     "debug.console.fontSize": 15,
     "editor.allowVariableFonts": false,
     "editor.codeActionsOnSave": {
-        "source.fixAll": "explicit",
+        "source.organizeImports": "always"
     },
+    "editor.codeLensFontSize": 14,
+    "editor.colorDecoratorsLimit": 2000,
     "editor.defaultFoldingRangeProvider": "esbenp.prettier-vscode",
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.definitionLinkOpensInPeek": true,
     "editor.detectIndentation": false,
-    "editor.fontFamily": "'Space Mono', 'Roboto Mono', monospace",
+    "editor.fontFamily": "'Google Sans Code', 'Space Mono', 'Source Code Pro', monospace",
     "editor.fontLigatures": false,
     "editor.fontSize": 15,
-    "editor.fontWeight": "normal",
-    "editor.formatOnSave": true,
     "editor.indentSize": "tabSize",
+    "editor.inlayHints.fontSize": 14,
     "editor.language.brackets": [],
-    "editor.wordWrap": "on",
+    "editor.smoothScrolling": false,
+    "editor.wordWrap": "bounded",
     "editor.wordWrapColumn": 120,
+    "emmet.includeLanguages": {
+        "javascript": "javascriptreact",
+        "typescript": "typescriptreact"
+    },
+    "eslint.bulkSuppression.enable": true,
+    "eslint.ignoreUntitled": true,
     "eslint.onIgnoredFiles": "warn",
+    "eslint.probe": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact",
+        "html",
+        "mdx",
+        "markdown",
+        "json",
+        "jsonc",
+        "css",
+        "graphql"
+    ],
     "eslint.trace.server": "off",
-    "eslint.validate": ["javascript", "typescript", "json"],
+    "eslint.useESLintClass": true,
+    "eslint.useFlatConfig": true,
+    "eslint.validate": ["javascript", "typescript", "javascriptreact", "typescriptreact", "json"],
     "explorer.fileNesting.enabled": true,
     "explorer.fileNesting.patterns": {
+        ".editorconfig": "eslint.*.ts, stylelint.*.ts, prettier.*.ts",
+        "*.db": "${capture}.${extname}-*",
+        "*.db3": "${capture}.${extname}-*",
         "*.js": "${capture}.d.ts, ${capture}.js.*, ${capture}.css, ${capture}.css.*, ${capture}.min.js",
-        "*.ts": "${capture}.d.ts, ${capture}.js",
-        "*.tsx": "${capture}.ts, ${capture}*.scss, ${capture}*.css",
-        "eslint.config.ts": "*lint.config.ts, prettier.config.ts",
+        "*.jsx": "${capture}.js",
+        "*.s3db": "${capture}.${extname}-*",
+        "*.sdb": "${capture}.${extname}-*",
+        "*.sqlite": "${capture}.${extname}-*",
+        "*.sqlite3": "${capture}.${extname}-*",
+        "*.ts": "${capture}.d.ts, ${capture}.js, ${capture}*.scss, ${capture}*.css",
+        "*.tsx": "${capture}.ts, ${capture}.js, ${capture}*.scss, ${capture}*.css",
         "package.json": "package-lock.json, yarn.lock, .yarnrc.yml, pnpm-lock.yaml, bun.lockb, bun.lock",
+        "tsconfig.json": "tsconfig*json, *.d.ts"
     },
-    "explorer.openEditors.minVisible": 5,
-    "explorer.openEditors.sortOrder": "alphabetical",
-    "explorer.openEditors.visible": 10,
+    "explorer.incrementalNaming": "smart",
+    "explorer.openEditors.minVisible": 20,
+    "explorer.openEditors.visible": 20,
     "explorer.sortOrder": "foldersNestsFiles",
     "explorer.sortOrderLexicographicOptions": "unicode",
+    "files.autoSave": "onWindowChange",
     "files.eol": "\n",
     "files.insertFinalNewline": true,
     "files.trimFinalNewlines": true,
-    "git.enableSmartCommit": true,
+    "git.addAICoAuthor": "off",
+    "git.autoStash": true,
+    "git.detectWorktrees": true,
+    "git.inputValidation": true,
+    "git.showActionButton": {
+        "sync": false
+    },
+    "git.showCommitInput": false,
+    "git.showPushSuccessNotification": true,
+    "git.terminalGitEditor": true,
+    "git.verboseCommit": true,
     "html.format.indentHandlebars": true,
     "html.format.indentInnerHtml": true,
     "html.format.wrapLineLength": 120,
     "html.suggest.hideEndTagSuggestions": true,
     "inlineChat.askInChat": false,
-    "js/ts.implicitProjectConfig.target": "ESNext",
-    "js/ts.preferences.organizeImports": {},
+    "ipynb.experimental.serialization": false,
+    "ipynb.pasteImagesAsAttachments.enabled": false,
+    "js/ts.tsserver.experimental.enableProjectDiagnostics": true,
     "js/ts.updateImportsOnFileMove.enabled": "always",
     "json.schemaDownload.trustedDomains": {
-        "https://developer.microsoft.com/json-schemas/": true,
-        "https://json-schema.org/": true,
-        "https://json.schemastore.org/": true,
-        "https://raw.githubusercontent.com/devcontainers/spec/": true,
         "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json": true,
-        "https://raw.githubusercontent.com/microsoft/vscode/": true,
-        "https://schemastore.azurewebsites.net/": true,
-        "https://www.schemastore.org/": true,
+        "https://www.schemastore.org/": true
     },
-    "less.format.spaceAroundSelectorSeparator": true,
+    "json.schemas": [
+        {
+            "fileMatch": ["package.json"],
+            "url": "https://www.schemastore.org/package.json"
+        }
+    ],
+    "Lua.format.defaultConfig": {
+        "indent_size": "4",
+        "indent_style": "space"
+    },
     "Lua.format.enable": true,
-    "markdown-mermaid.darkModeTheme": "dark",
-    "markdown-mermaid.lightModeTheme": "dark",
-    "markdown.preview.fontFamily": "Roboto, 'Open Sans', system-ui, sans-serif",
-    "notebook.defaultFormatter": "esbenp.prettier-vscode",
-    "notebook.output.wordWrap": true,
+    "markdown.preview.fontFamily": "'Google Sans', 'Open Sans', system-ui, sans-serif",
+    "material-icon-theme.activeIconPack": "react",
+    "material-icon-theme.enableLogging": true,
     "npm.packageManager": "yarn",
     "npm.scriptRunner": "yarn",
+    "oneDarkPro.editorTheme": "Shadow",
     "prettier.bracketSameLine": true,
+    "prettier.ignorePath": "",
     "prettier.printWidth": 120,
     "prettier.semi": false,
     "prettier.singleAttributePerLine": true,
     "prettier.singleQuote": true,
     "prettier.tabWidth": 4,
+    "prettier.trailingComma": "none",
     "python.analysis.autoFormatStrings": true,
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.completeFunctionParens": true,
+    "python.analysis.diagnosticMode": "workspace",
+    "python.analysis.enablePytestSupport": false,
+    "python.analysis.typeCheckingMode": "strict",
     "scm.inputFontSize": 15,
-    "scss.format.spaceAroundSelectorSeparator": true,
-    "stylelint.validate": ["css", "postcss", "scss", "javascriptreact", "typescriptreact"],
+    "stylelint.lintFiles.glob": "**/*.{css,scss,jsx,tsx}",
+    "stylelint.packageManager": "yarn",
+    "stylelint.reportDescriptionlessDisables": true,
+    "stylelint.reportInvalidScopeDisables": true,
+    "stylelint.reportNeedlessDisables": true,
+    "stylelint.snippet": [],
+    "stylelint.validate": ["css", "sass"],
+    "telemetry.telemetryLevel": "off",
     "terminal.external.windowsExec": "wt",
     "terminal.integrated.confirmOnExit": "always",
     "terminal.integrated.cursorBlinking": true,
@@ -136,24 +272,28 @@
         "Command Prompt": {
             "args": [],
             "icon": "terminal-cmd",
-            "path": ["${env:windir}\\Sysnative\\cmd.exe", "${env:windir}\\System32\\cmd.exe"],
+            "path": ["${env:windir}\\Sysnative\\cmd.exe", "${env:windir}\\System32\\cmd.exe"]
         },
         "Git Bash": {
             "icon": "terminal-git-bash",
-            "source": "Git Bash",
+            "source": "Git Bash"
         },
         "PowerShell": {
             "args": [],
             "icon": "terminal-powershell",
-            "path": "pwsh.exe",
-        },
+            "path": "pwsh.exe"
+        }
     },
+    "terminal.integrated.shellIntegration.enabled": true,
+    "terminal.integrated.smoothScrolling": false,
+    "terminal.integrated.stickyScroll.enabled": false,
     "terminal.integrated.suggest.inlineSuggestion": "alwaysOnTopExceptExactMatch",
     "terminal.integrated.suggest.providers": {
-        "lsp": false,
+        "lsp": false
     },
     "terminal.integrated.suggest.suggestOnTriggerCharacters": true,
     "terminal.integrated.tabs.defaultColor": "terminal.ansiBlack",
+    "wgsl.validateOnType": true,
     "window.systemColorTheme": "dark",
     "window.zoomLevel": 1,
     "workbench.browser.searchEngine": "google",
@@ -177,29 +317,35 @@
         "settings.modifiedItemForeground": "#FFA000",
         "settings.modifiedItemIndicator": "#FFA000",
         "tab.activeBorder": "#FFA000",
-        "textLink.foreground": "#FFA000",
+        "textLink.foreground": "#FFA000"
     },
     "workbench.experimental.modernUI": true,
     "workbench.externalBrowser": "chrome",
-    "workbench.preferredHighContrastLightColorTheme": "Default High Contrast",
-    "workbench.preferredLightColorTheme": "Dark 2026",
+    "workbench.preferredDarkColorTheme": "One Dark Pro Darker",
+    "workbench.preferredHighContrastColorTheme": "One Dark Pro Darker",
+    "workbench.preferredHighContrastLightColorTheme": "One Dark Pro Darker",
+    "workbench.preferredLightColorTheme": "One Dark Pro Night Flat",
     "workbench.secondarySideBar.defaultVisibility": "hidden",
     "workbench.tree.indent": 25,
-    "git.autoStash": true,
-    "git.inputValidation": true,
-    "css.validate": false,
-    "scss.validate": false,
-    "less.validate": false,
-    "stylelint.lintFiles.glob": "**/*.{css,scss,jsx,tsx}",
-    "stylelint.packageManager": "yarn",
-    "stylelint.reportNeedlessDisables": true,
-    "stylelint.reportInvalidScopeDisables": true,
-    "stylelint.reportDescriptionlessDisables": true,
-    "json.schemas": [
-        {
-            "fileMatch": ["package.json"],
-            "url": "https://www.schemastore.org/package.json",
-        },
-    ],
-    "diffEditor.ignoreTrimWhitespace": false,
+    "workbench.colorTheme": "One Dark Pro Darker",
+    "problems.sortOrder": "position",
+    "workbench.editor.revealIfOpen": true,
+    "cSpell.useLocallyInstalledCSpellDictionaries": false,
+    "eslint.codeActionsOnSave.options": {
+        "fixAll": false
+    },
+    "js/ts.format.indentSwitchCase": false,
+    "js/ts.format.insertSpaceAfterCommaDelimiter": false,
+    "js/ts.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
+    "js/ts.format.enabled": false,
+    "js/ts.preferences.renameMatchingJsxTags": false,
+    "js/ts.preferences.useAliasesForRenames": false,
+    "js/ts.format.insertSpaceAfterKeywordsInControlFlowStatements": false,
+    "js/ts.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
+    "js/ts.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": false,
+    "js/ts.format.insertSpaceAfterSemicolonInForStatements": false,
+    "js/ts.format.insertSpaceBeforeAndAfterBinaryOperators": false,
+    "eslint.codeActionsOnSave.mode": "problems",
+    "files.refactoring.autoSave": false,
+    "editor.formatOnSave": true
 }

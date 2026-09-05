@@ -1,6 +1,3 @@
-# --- oh-my-posh Config --- #
-oh-my-posh init pwsh --config ~/.oh-my-posh/themes/otheypsy.omp.json | Invoke-Expression
-
 # --- QOL --- #
 Import-Module -Name Terminal-Icons
 Import-Module -Name PSReadLine
@@ -144,3 +141,6 @@ function Invoke-YT-Download {
 	yt-dlp $splat -o "$output.$format"
 
 }
+
+# --- oh-my-posh Config --- #
+oh-my-posh init pwsh --config ~/.oh-my-posh/themes/otheypsy.omp.json | Invoke-Expression

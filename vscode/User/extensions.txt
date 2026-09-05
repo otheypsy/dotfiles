@@ -1,0 +1,17 @@
+alexshen.classdiagram-ts
+chanhx.crabviz
+christian-kohler.npm-intellisense
+dbaeumer.vscode-eslint
+editorconfig.editorconfig
+esbenp.prettier-vscode
+github.vscode-github-actions
+ms-python.black-formatter
+ms-python.python
+ms-python.vscode-pylance
+ms-vscode.powershell
+polymeilex.wgsl
+streetsidesoftware.code-spell-checker
+streetsidesoftware.code-spell-checker-cspell-bundled-dictionaries
+sumneko.lua
+wgsl-analyzer.wgsl-analyzer
+zhuangtongfa.material-theme
