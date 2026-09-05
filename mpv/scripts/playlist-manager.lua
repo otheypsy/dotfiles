@@ -1124,13 +1124,13 @@ function get_playlist_filenames_set()
 end
 
 --Creates a playlist of all files in directory, will keep the order and position
---For exaple, Folder has 12 files, you open the 5th file and run this, the remaining 7 are added behind the 5th file and prior 4 files before it
+--For example, Folder has 12 files, you open the 5th file and run this, the remaining 7 are added behind the 5th file and prior 4 files before it
 function playlist(force_dir)
     refresh_globals()
     if not directory and plen > 0 then return end
-    local hasfile = true
+    local has_file = true
     if plen == 0 then
-        hasfile = false
+        has_file = false
         dir = mp.get_property("working-directory")
     else
         dir = directory
@@ -1161,22 +1161,22 @@ function playlist(force_dir)
             if file == nil or file[1] == "." then
                 break
             end
-            local appendstr = "append"
-            if not hasfile then
+            local append_str = "append"
+            if not has_file then
                 cur = true
-                appendstr = "append-play"
-                hasfile = true
+                append_str = "append-play"
+                has_file = true
             end
             if filename == file then
                 cur = true
             elseif filenames[file] then
                 -- skip files already in playlist
             elseif cur == true or settings.loadfiles_always_append then
-                mp.commandv("loadfile", utils.join_path(dir, file), appendstr)
+                mp.commandv("loadfile", utils.join_path(dir, file), append_str)
                 msg.info("Appended to playlist: " .. file)
                 c2 = c2 + 1
             else
-                mp.commandv("loadfile", utils.join_path(dir, file), appendstr)
+                mp.commandv("loadfile", utils.join_path(dir, file), append_str)
                 msg.info("Prepended to playlist: " .. file)
                 mp.commandv("playlist-move", mp.get_property_number("playlist-count", 1) - 1, c)
                 c = c + 1
@@ -1240,7 +1240,7 @@ local menu_items = {
     {
         label = "Sort playlist",
         action = function()
-            sortplaylist_by_next_mode()
+            sort_playlist_by_next_mode()
         end,
     },
     {
@@ -1252,7 +1252,7 @@ local menu_items = {
     {
         label = "Shuffle playlist",
         action = function()
-            shuffleplaylist()
+            shuffle_playlist()
         end,
     },
     {
@@ -1356,16 +1356,16 @@ function save_playlist(filename)
     if length == 0 then return end
 
     --get playlist save path
-    local savepath = get_playlist_save_path()
+    local save_path = get_playlist_save_path()
 
-    --create savepath if it doesn't exist
-    if utils.readdir(savepath) == nil then
-        local windows_args = { "powershell", "-NoProfile", "-Command", "mkdir", savepath }
-        local unix_args = { "mkdir", savepath }
+    --create save_path if it doesn't exist
+    if utils.readdir(save_path) == nil then
+        local windows_args = { "powershell", "-NoProfile", "-Command", "mkdir", save_path }
+        local unix_args = { "mkdir", save_path }
         local args = settings.system == "windows" and windows_args or unix_args
         local res = utils.subprocess({ args = args, cancellable = false })
-        if res.status ~= 0 then
-            msg.error("Failed to create playlist save directory " .. savepath .. ". Error: " .. (res.error or "unknown"))
+        if res and res.status ~= 0 then
+            msg.error("Failed to create playlist save directory " .. save_path .. ". Error: " .. (res.error or "unknown"))
             return
         end
     end
@@ -1374,17 +1374,17 @@ function save_playlist(filename)
     if name == nil then
         if settings.playlist_save_filename == nil or settings.playlist_save_filename == "" then
             local date = os.date("*t")
-            local datestring = ("%02d-%02d-%02d_%02d-%02d-%02d"):format(date.year, date.month, date.day, date.hour,
+            local date_string = ("%02d-%02d-%02d_%02d-%02d-%02d"):format(date.year, date.month, date.day, date.hour,
                 date.min, date.sec)
 
-            name = datestring .. "_playlist-size_" .. length .. ".m3u"
+            name = date_string .. "_playlist-size_" .. length .. ".m3u"
         else
             name = settings.playlist_save_filename
         end
     end
 
-    local savepath = utils.join_path(savepath, name)
-    local file, err = io.open(savepath, "w")
+    local save_path = utils.join_path(save_path, name)
+    local file, err = io.open(save_path, "w")
     if not file then
         msg.error("Error in creating playlist file, check permissions. Error: " .. (err or "unknown"))
     else
@@ -1392,19 +1392,19 @@ function save_playlist(filename)
         local i = 0
         while i < length do
             local pwd = mp.get_property("working-directory")
-            local filename = mp.get_property("playlist/" .. i .. "/filename")
-            local fullpath = filename
-            if not is_protocol(filename) then
-                fullpath = utils.join_path(pwd, filename)
+            local file_name = mp.get_property("playlist/" .. i .. "/filename")
+            local full_path = file_name
+            if not is_protocol(file_name) then
+                full_path = utils.join_path(pwd, file_name) or ""
             end
-            local title = mp.get_property("playlist/" .. i .. "/title") or title_table[filename]
+            local title = mp.get_property("playlist/" .. i .. "/title") or title_table[file_name]
             if title then
                 file:write("#EXTINF:," .. title .. "\n")
             end
-            file:write(fullpath, "\n")
+            file:write(full_path, "\n")
             i = i + 1
         end
-        local saved_msg = "Playlist written to: " .. savepath
+        local saved_msg = "Playlist written to: " .. save_path
         if settings.display_osd_feedback then mp.osd_message(saved_msg) end
         msg.info(saved_msg)
         file:close()
@@ -1412,18 +1412,18 @@ function save_playlist(filename)
 end
 
 function alphanumsort(a, b)
-    local function padnum(d)
+    local function pad_num(d)
         local dec, n = string.match(d, "(%.?)0*(.+)")
         return #dec > 0 and ("%.12f"):format(d) or ("%s%03d%s"):format(dec, #n, n)
     end
-    return tostring(a):lower():gsub("%.?%d+", padnum) .. ("%3d"):format(#b)
-        < tostring(b):lower():gsub("%.?%d+", padnum) .. ("%3d"):format(#a)
+    return tostring(a):lower():gsub("%.?%d+", pad_num) .. ("%3d"):format(#b)
+        < tostring(b):lower():gsub("%.?%d+", pad_num) .. ("%3d"):format(#a)
 end
 
 -- fast sort algo from https://github.com/zsugabubus/dotfiles/blob/master/.config/mpv/scripts/playlist-filtersort.lua
-function sortplaylist(startover)
+function sort_playlist(start_over)
     local playlist = mp.get_property_native("playlist")
-    if #playlist < 2 then return end
+    if not playlist or #playlist < 2 then return end
 
     local order = {}
     for i = 1, #playlist do
@@ -1461,7 +1461,7 @@ function sortplaylist(startover)
     end
 
     cursor = mp.get_property_number("playlist-pos", 0)
-    if startover then
+    if start_over then
         mp.set_property("playlist-pos", 0)
     end
     if playlist_visible then
@@ -1472,8 +1472,8 @@ function sortplaylist(startover)
     end
 end
 
-function sortplaylist_by_next_mode()
-    sortplaylist()
+function sort_playlist_by_next_mode()
+    sort_playlist()
     sort_mode = sort_mode + 1
     if sort_mode > #sort_modes then sort_mode = 1 end
 end
@@ -1492,7 +1492,7 @@ function reverse_playlist()
     end
 end
 
-function shuffleplaylist()
+function shuffle_playlist()
     refresh_globals()
     if plen < 2 then return end
     mp.command("playlist-shuffle")
@@ -1569,7 +1569,7 @@ function add_keybinds()
     bind_keys_forced(settings.key_unselect_file, "unselectfile", unselectfile)
     bind_keys_forced(settings.key_play_file, "playfile", playfile)
     bind_keys_forced(settings.key_remove_file, "removefile", removefile, "repeatable")
-    bind_keys_forced(settings.key_close_playlist, "closeplaylist", remove_keybinds)
+    bind_keys_forced(settings.key_close_playlist, "close_playlist", remove_keybinds)
 end
 
 function remove_keybinds()
@@ -1594,9 +1594,9 @@ function remove_keybinds()
         unbind_keys(settings.key_move_end, "moveend")
         unbind_keys(settings.key_select_file, "selectfile")
         unbind_keys(settings.key_unselect_file, "unselectfile")
-        unbind_keys(settings.key_playvfile, "playfile")
+        unbind_keys(settings.key_play_file, "playfile")
         unbind_keys(settings.key_remove_file, "removefile")
-        unbind_keys(settings.key_close_playlist, "closeplaylist")
+        unbind_keys(settings.key_close_playlist, "close_playlist")
     end
 end
 
@@ -1616,7 +1616,7 @@ mp.observe_property("playlist-count", "number", function(_, plcount)
     if settings.sort_playlist_on_file_add and (plcount > plen) then
         msg.info("Added files will be automatically sorted")
         refresh_globals()
-        sortplaylist()
+        sort_playlist()
     end
     refresh_ui()
     resolve_titles()
@@ -1867,12 +1867,17 @@ function resolve_ffprobe_metadata(id, filename)
                 -- local resolution = string.format("%4sp", height) -- width .. "x" .. height
 
                 local resolution = resolution_labels["not_found"]
-				if height < 720 then resolution = resolution_labels["sd"]
-				elseif height < 1080 then resolution = resolution_labels["hd"]
-				elseif height < 1440 then resolution = resolution_labels["fhd"]
-				elseif height < 2160 then resolution = resolution_labels["qhd"]
-				elseif height >= 2160 then resolution = resolution_labels["uhd"]
-				end
+                if height < 720 then
+                    resolution = resolution_labels["sd"]
+                elseif height < 1080 then
+                    resolution = resolution_labels["hd"]
+                elseif height < 1440 then
+                    resolution = resolution_labels["fhd"]
+                elseif height < 2160 then
+                    resolution = resolution_labels["qhd"]
+                elseif height >= 2160 then
+                    resolution = resolution_labels["uhd"]
+                end
 
                 metadata_table[filename] = {
                     duration = duration,
@@ -1889,7 +1894,7 @@ function resolve_ffprobe_metadata(id, filename)
                 if string.find(res.stderr, "No such file or directory") ~= nil and settings.remove_file_not_found then
                     if filename == mp.get_property("playlist/" .. id .. "/filename") then
                         mp.commandv("playlist-remove", id)
-						msg.info("Removed " .. filename .. " from playlist")
+                        msg.info("Removed " .. filename .. " from playlist")
                     end
                 end
                 return
@@ -1932,10 +1937,10 @@ function Handle_Message(msg, value, value2)
         mp.commandv("show-text", stripped_name); return
     end
     if msg == "sort" then
-        sortplaylist(value); return
+        sort_playlist(value); return
     end
     if msg == "shuffle" then
-        shuffleplaylist(); return
+        shuffle_playlist(); return
     end
     if msg == "reverse" then
         reverse_playlist(); return
@@ -1969,8 +1974,8 @@ end
 
 mp.register_script_message("playlist-manager", Handle_Message)
 
-bind_keys(settings.key_sortplaylist, "sortplaylist", sortplaylist_by_next_mode)
-bind_keys(settings.key_shuffleplaylist, "shuffleplaylist", shuffleplaylist)
+bind_keys(settings.key_sort_playlist, "sort_playlist", sort_playlist_by_next_mode)
+bind_keys(settings.key_shuffle_playlist, "shuffle_playlist", shuffle_playlist)
 bind_keys(settings.key_reverse_playlist, "reverse_playlist", reverse_playlist)
 bind_keys(settings.key_loadfiles, "loadfiles", playlist)
 bind_keys(settings.key_saveplaylist, "saveplaylist", activate_playlist_save_prompt)

@@ -255,8 +255,8 @@ local function generate_graph(values, i, len, v_max, v_avg, scale, x_tics, max_v
 
     local s = { format("%s{\\rDefault}{\\pbo%f}{\\shad0}", o.prefix_sep, y_offset) }
     s[#s] = s[#s] .. format("{\\bord%f}{\\3c&H%s&}{\\1c&H%s&}{\\1a&H99}{\\p1}m 0 %f l %f %f %f 0 0 0 m 0 %f ",
-        plot_bg_border_width, o.plot_bg_border_color, o.plot_bg_color,
-        y_max, x_max, y_max, x_max, y_max)
+                            plot_bg_border_width, o.plot_bg_border_color, o.plot_bg_color,
+                            y_max, x_max, y_max, x_max, y_max)
 
     s[#s] = s[#s] .. format("{\\bord0}{\\1a&H00}{\\1c&H%s&}", o.plot_color)
     s[#s] = s[#s] .. format("m 0 0 n %f %f l ", x, y_max - scale * values[i])
@@ -309,8 +309,8 @@ local function append(s, str, attr)
     local index = #s + (attr.nl == "" and 0 or 1)
     s[index] = s[index] or ""
     s[index] = s[index] .. format("%s%s%s%s%s%s%s%s", attr.nl, attr.indent,
-        highlight_color, attr.prefix,
-        attr.prefix_sep, no_ASS(str), attr.suffix, base_color)
+                                  highlight_color, attr.prefix,
+                                  attr.prefix_sep, no_ASS(str), attr.suffix, base_color)
     return true
 end
 
@@ -380,7 +380,7 @@ local function append_perfdata(header, s, dedicated_page)
         last_s[frame], avg_s[frame], peak_s[frame] = 0, 0, 0
         for _, pass in ipairs(data) do
             last_s[frame] = last_s[frame] + pass["last"]
-            avg_s[frame]  = avg_s[frame] + pass["avg"]
+            avg_s[frame] = avg_s[frame] + pass["avg"]
             peak_s[frame] = peak_s[frame] + pass["peak"]
         end
     end
@@ -426,18 +426,18 @@ local function append_perfdata(header, s, dedicated_page)
         h[#h + 1] = format("{\\1c&H%s&}", o.font_highlight_color)
         h[#h + 1] = format("%s", bold("Frame Timings: "))
         h[#h] = h[#h] .. format(f .. "%s%s",
-            " ", " ", " ", o.indent, o.indent, o.indent,
-            o.prefix_sep, o.prefix_sep, o.prefix_sep,
-            "last", " avg", "peak", o.indent, o.indent, scroll_hint())
+                                " ", " ", " ", o.indent, o.indent, o.indent,
+                                o.prefix_sep, o.prefix_sep, o.prefix_sep,
+                                "last", " avg", "peak", o.indent, o.indent, scroll_hint())
         h[#h + 1] = format("%s%s%s%s%s%s%s%s%s%s  %s   %s   %s",
-            o.nl, o.indent, o.indent,
-            o.indent, o.indent, o.indent, o.indent, o.prefix_sep, o.prefix_sep, " ",
-            "----", "----", "----")
+                           o.nl, o.indent, o.indent,
+                           o.indent, o.indent, o.indent, o.indent, o.prefix_sep, o.prefix_sep, " ",
+                           "----", "----", "----")
         h[#h + 1] = format("{\\1c&H%s&}", o.font_color)
     else
         h[#h + 1] = format("%s%s%s%s%s",
-            bold("Frame Timings:"), o.prefix_sep,
-            font_small, "(last | average | peak) in μs", font_normal)
+                           bold("Frame Timings:"), o.prefix_sep,
+                           font_small, "(last | average | peak) in μs", font_normal)
     end
 
     for _, frame in ipairs(sorted_keys(vo_p)) do -- ensure fixed display order
@@ -445,25 +445,27 @@ local function append_perfdata(header, s, dedicated_page)
 
         if dedicated_page then
             s[#s + 1] = format("%s%s{\\1c&H%s&}%s:{\\1c&H%s&}%s", o.nl, o.prefix_sep, o.font_highlight_color,
-                bold(frame:gsub("^%l", string.upper)), o.font_color, o.nl)
+                               bold(frame:gsub("^%l", string.upper)), o.font_color, o.nl)
 
             for _, pass in ipairs(data) do
                 s[#s + 1] = format("%s", o.nl)
                 if o.plot_perfdata and o.use_ass then
                     s[#s] = s[#s] .. generate_graph(pass["samples"], pass["count"],
-                        pass["count"], pass["peak"],
-                        pass["avg"], 0.8, 0.20, 254)
+                                                    pass["count"], pass["peak"],
+                                                    pass["avg"], 0.8, 0.20, 254)
                 end
 
-                s[#s] = s[#s] .. format("%s %s | %s | %s %s%s%s%s%s{\\b0}%s", ratio_styling(pass["last"], last_s[frame]),
-                    pp(pass["last"]), pp(pass["avg"]), pp(pass["peak"]),
-                    o.prefix_sep, p(pass["last"], last_s[frame]), o.indent, o.prefix_sep, pass["desc"], base_color)
+                s[#s] = s[#s] ..
+                    format("%s %s | %s | %s %s%s%s%s%s{\\b0}%s", ratio_styling(pass["last"], last_s[frame]),
+                           pp(pass["last"]), pp(pass["avg"]), pp(pass["peak"]),
+                           o.prefix_sep, p(pass["last"], last_s[frame]), o.indent, o.prefix_sep,
+                           pass["desc"], base_color)
             end
 
             s[#s + 1] = format("%s%s%s%s%s%s%s%s%s%s  %s   %s   %s",
-                o.nl, o.indent, o.indent,
-                o.indent, o.indent, o.indent, o.indent, o.prefix_sep, o.prefix_sep, " ",
-                "----", "----", "----")
+                               o.nl, o.indent, o.indent,
+                               o.indent, o.indent, o.indent, o.indent, o.prefix_sep, o.prefix_sep, " ",
+                               "----", "----", "----")
 
             -- Print sum of timing values as "Total"
             s[#s + 1] = format(
@@ -475,9 +477,9 @@ local function append_perfdata(header, s, dedicated_page)
         else
             -- for the simplified view, we just print the sum of each pass
             s[#s + 1] = format("%s %s | %s | %s %s%s%s%s", o.nl, "", o.indent, o.indent,
-                pp(last_s[frame]), pp(avg_s[frame]), pp(peak_s[frame]),
-                "", "", font, o.prefix_sep, o.prefix_sep,
-                frame:gsub("^%l", string.upper), o.prefix_sep)
+                               pp(last_s[frame]), pp(avg_s[frame]), pp(peak_s[frame]),
+                               "", "", font, o.prefix_sep, o.prefix_sep,
+                               frame:gsub("^%l", string.upper), o.prefix_sep)
         end
     end
 end
@@ -568,17 +570,17 @@ local function get_kbinfo_lines()
     local bindings = mp.get_property_native("input-bindings", {})
     local active = {} -- map: key-name -> bind-info
     for _, bind in pairs(bindings) do
-        if bind.priority >= 0 and (
-                not active[bind.key] or
-                (active[bind.key].is_weak and not bind.is_weak) or
-                (bind.is_weak == active[bind.key].is_weak and
-                    bind.priority > active[bind.key].priority)
-            ) and not bind.cmd:find("script-binding stats/__forced_", 1, true)
-            and bind.section ~= "input_forced_console"
-            and (
-                searched_text == nil or
-                (bind.key .. bind.cmd .. (bind.comment or "")):lower():find(searched_text, 1, true)
-            )
+        if  bind.priority >= 0 and (
+            not active[bind.key] or
+            (active[bind.key].is_weak and not bind.is_weak) or
+            (bind.is_weak == active[bind.key].is_weak and
+                bind.priority > active[bind.key].priority)
+        ) and not bind.cmd:find("script-binding stats/__forced_", 1, true)
+        and bind.section ~= "input_forced_console"
+        and (
+            searched_text == nil or
+            (bind.key .. bind.cmd .. (bind.comment or "")):lower():find(searched_text, 1, true)
+        )
         then
             active[bind.key] = bind
         end
@@ -629,7 +631,7 @@ local function get_kbinfo_lines()
     local kpost = term and " " or format(" {\\fn%s}", o.font)
     local spre = term and kspaces .. "   "
         or format("{\\q2\\fn%s}%s   {\\fn%s}{\\fs%d\\u1}",
-            o.font_mono, kspaces, o.font, 1.3 * font_size)
+                  o.font_mono, kspaces, o.font, 1.3 * font_size)
     local spost = term and "" or format("{\\u0\\fs%d}%s", font_size, text_style())
 
     -- create the display lines
@@ -640,24 +642,24 @@ local function get_kbinfo_lines()
             subject = bind.subject
             append(info_lines, "", {})
             append(info_lines, "",
-                {
-                    prefix = spre .. subject .. spost,
-                    no_prefix_markup = false,
-                    no_bold = false,
-                    second_highlight = false
-                }
+                   {
+                       prefix = spre .. subject .. spost,
+                       no_prefix_markup = false,
+                       no_bold = false,
+                       second_highlight = false
+                   }
             )
         end
         if bind.comment then
             bind.cmd = bind.cmd .. "  # " .. bind.comment
         end
         append(info_lines, bind.cmd,
-            {
-                prefix = kpre .. no_ASS(align_right(bind.key)) .. kpost,
-                no_prefix_markup = true,
-                no_bold = false,
-                second_highlight = false
-            }
+               {
+                   prefix = kpre .. no_ASS(align_right(bind.key)) .. kpost,
+                   no_prefix_markup = true,
+                   no_bold = false,
+                   second_highlight = false
+               }
         )
     end
     return info_lines
@@ -684,7 +686,9 @@ local function append_display_sync(s)
         return
     end
 
-    local vspeed = append_property(s, "video-speed-correction",
+    local vspeed = append_property(
+        s,
+        "video-speed-correction",
         {
             prefix = "DS:",
             no_prefix_markup = true,
@@ -693,7 +697,9 @@ local function append_display_sync(s)
         }
     )
     if vspeed then
-        append_property(s, "audio-speed-correction",
+        append_property(
+            s,
+            "audio-speed-correction",
             {
                 prefix = "/",
                 nl = "",
@@ -705,7 +711,8 @@ local function append_display_sync(s)
             }
         )
     else
-        append_property(s, "audio-speed-correction",
+        append_property(
+            s, "audio-speed-correction",
             {
                 prefix = "DS:" .. o.prefix_sep .. " - / ",
                 prefix_sep = "",
@@ -739,11 +746,11 @@ local function append_display_sync(s)
         local jitter_graph = ""
         if o.plot_vsync_ratio then
             ratio_graph = generate_graph(vsratio_buf, vsratio_buf.pos,
-                vsratio_buf.len, vsratio_buf.max, nil, 0.8, 1)
+                                         vsratio_buf.len, vsratio_buf.max, nil, 0.8, 1)
         end
         if o.plot_vsync_jitter then
             jitter_graph = generate_graph(vsjitter_buf, vsjitter_buf.pos,
-                vsjitter_buf.len, vsjitter_buf.max, nil, 0.8, 1)
+                                          vsjitter_buf.len, vsjitter_buf.max, nil, 0.8, 1)
         end
         append_property(s, "vsync-ratio", {
             prefix = "VSync Ratio:",
@@ -802,7 +809,6 @@ local function append_filters(s, prop, prefix)
         length = length + n:len() + ps:len()
         filters[#filters + 1] = no_ASS(n) .. it(no_ASS(ps))
     end
-
     if #filters > 0 then
         local ret
         if length < o.filter_params_max_length then
@@ -834,11 +840,11 @@ end
 
 local function add_profiles(s)
     append(s, "",
-        {
-            prefix = "Auto Profiles:",
-            nl = o.nl,
-            indent = ""
-        }
+           {
+               prefix = "Auto Profiles:",
+               nl = o.nl,
+               indent = ""
+           }
     )
 
 
@@ -846,27 +852,27 @@ local function add_profiles(s)
     for _, profile in pairs(profiles) do
         if profile.active then
             append(s, profile["profile-desc"],
-                {
-                    prefix = format(template .. "   ", profile.name),
-                    prefix_sep = " : ",
-                    nl = o.nl,
-                    indent = o.indent,
-                    no_prefix_markup = true,
-                    no_bold = true,
-                    second_highlight = false
-                }
+                   {
+                       prefix = format(template .. "   ", profile.name),
+                       prefix_sep = "  : ",
+                       nl = o.nl,
+                       indent = o.indent,
+                       no_prefix_markup = true,
+                       no_bold = true,
+                       second_highlight = false
+                   }
             )
             for _, sub_profile in pairs(profile["sub_profiles"]) do
                 append(s, profiles[sub_profile]["profile-desc"],
-                    {
-                        prefix = format(" ↪  " .. template, profiles[sub_profile]["name"]),
-                        prefix_sep = "  : ",
-                        nl = o.nl,
-                        indent = o.indent,
-                        no_prefix_markup = true,
-                        no_bold = true,
-                        second_highlight = false
-                    }
+                       {
+                           prefix = format(" ↪  " .. template, profiles[sub_profile]["name"]),
+                           prefix_sep = "  : ",
+                           nl = o.nl,
+                           indent = o.indent,
+                           no_prefix_markup = true,
+                           no_bold = true,
+                           second_highlight = false
+                       }
                 )
             end
         end
@@ -894,7 +900,9 @@ local function add_displays(s)
         end
         local id = (display["current"] and "* " or "  ")
         id = id .. "[" .. display["name"] .. "]"
-        append(s, "",
+        append(
+            s,
+            "",
             {
                 prefix = id,
                 prefix_sep = "",
@@ -906,7 +914,8 @@ local function add_displays(s)
         )
 
         -- First Line
-        append(s,
+        append(
+            s,
             format("%-15s", display["width"] .. " x " .. display["height"]),
             {
                 prefix = format("%10s:", "Resolution"),
@@ -919,65 +928,66 @@ local function add_displays(s)
             }
         )
         append(s,
-            format("%-12s", display["refresh_rate"]),
-            {
-                prefix = format("%12s:", "Refresh Rate"),
-                prefix_sep = " ",
-                nl = "",
-                no_prefix_markup = true,
-                no_bold = is_inactive,
-                second_highlight = display["current"]
-            }
+               format("%-13s", display["refresh_rate"]),
+               {
+                   prefix = format("%12s:", "Refresh Rate"),
+                   prefix_sep = " ",
+                   nl = "",
+                   no_prefix_markup = true,
+                   no_bold = is_inactive,
+                   second_highlight = display["current"]
+               }
         )
         append(s,
-            format("%-10s", display["bit_depth"]),
-            {
-                prefix = format("%10s:", "Bit Depth"),
-                prefix_sep = " ",
-                nl = "",
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+               format("%-12s", display["bit_depth"]),
+               {
+                   prefix = format("%9s:", "Bit Depth"),
+                   prefix_sep = " ",
+                   nl = "",
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               }
         )
         append(s, display["transfer"],
-            {
-                prefix = "Transfer:",
-                prefix_sep = " ",
-                nl = "",
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+               {
+                   prefix = "Transfer:",
+                   prefix_sep = " ",
+                   nl = "",
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               }
         )
         append(s, display["primaries"],
-            {
-                prefix = "Primaries:",
-                prefix_sep = " ",
-                nl = "",
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+               {
+                   prefix = "Primaries:",
+                   prefix_sep = " ",
+                   nl = "",
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               }
         )
 
         -- New Line
         local hdr = display["hdr_supported"] and "Supported" or "Not Supported"
         hdr = (display["hdr_status"] == "on") and "Enabled" or hdr
         append(s,
-            format("%-15s", hdr),
-            {
-                prefix = format("%10s:", "HDR"),
-                prefix_sep = " ",
-                nl = o.nl,
-                indent = o.indent,
-                no_prefix_markup = true,
-                no_bold = is_inactive,
-                second_highlight = display["current"]
-            }
+               format("%-15s", hdr),
+               {
+                   prefix = format("%10s:", "HDR"),
+                   prefix_sep = " ",
+                   nl = o.nl,
+                   indent = o.indent,
+                   no_prefix_markup = true,
+                   no_bold = is_inactive,
+                   second_highlight = display["current"]
+               }
         )
-        append(s,
-            format("%-12s", display["technology"]),
+        append(
+            s,
+            format("%-13s", display["technology"]),
             {
                 prefix = format("%12s:", "Connector"),
                 prefix_sep = " ",
@@ -988,25 +998,25 @@ local function add_displays(s)
             }
         )
         append(s,
-            format("%-3.1f%4s%-3.1f", display["min_luminance"], " to ", display["max_luminance"]),
-            {
-                prefix = format("%10s:", "Luminance"),
-                prefix_sep = " ",
-                nl = "",
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+               format("%-3.1f%4s%-3.1f", display["min_luminance"], " to ", display["max_luminance"]),
+               {
+                   prefix = format("%9s:", "Luminance"),
+                   prefix_sep = " ",
+                   nl = "",
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               }
         )
         append(s, display["max_full_frame_luminance"],
-            {
-                prefix = "Max Full Frame Luminance:",
-                prefix_sep = " ",
-                nl = "",
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            })
+               {
+                   prefix = "Max Full Frame Luminance:",
+                   prefix_sep = " ",
+                   nl = "",
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               })
 
         --[[
 		"current": true,
@@ -1028,40 +1038,40 @@ end
 
 local function add_file(s, print_cache, print_tags)
     append(s, "",
-        {
-            prefix = "Media File:",
-            nl = o.nl,
-            indent = ""
-        }
+           {
+               prefix = "Media File:",
+               nl = o.nl,
+               indent = ""
+           }
     )
     append_property(s, "path",
-        {
-            prefix = "Path:",
-            prefix_sep = " ",
-            nl = o.nl,
-            indent = o.indent,
-            no_prefix_markup = true,
-            no_bold = false,
-            second_highlight = true
-        }
+                    {
+                        prefix = "Path:",
+                        prefix_sep = " ",
+                        nl = o.nl,
+                        indent = o.indent,
+                        no_prefix_markup = true,
+                        no_bold = false,
+                        second_highlight = true
+                    }
     )
     if mp.get_property_osd("filename") ~= mp.get_property_osd("media-title") then
         append_property(s, "media-title",
-            {
-                prefix = "Title:",
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+                        {
+                            prefix = "Title:",
+                            no_prefix_markup = true,
+                            no_bold = true,
+                            second_highlight = false
+                        }
         )
     end
     append_property(s, "duration",
-        {
-            prefix = "Duration:",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+                    {
+                        prefix = "Duration:",
+                        no_prefix_markup = true,
+                        no_bold = true,
+                        second_highlight = false
+                    }
     )
 
     if print_tags then
@@ -1069,15 +1079,15 @@ local function add_file(s, print_cache, print_tags)
         local tags_displayed = 0
         for _, tag in ipairs(tags) do
             local value = mp.get_property("metadata/by-key/" .. tag)
-            if tag ~= "Title" and tags_displayed < o.file_tag_max_count
-                and value and value:len() < o.file_tag_max_length then
+            if  tag ~= "Title" and tags_displayed < o.file_tag_max_count
+            and value and value:len() < o.file_tag_max_length then
                 append(s, value,
-                    {
-                        prefix = string.gsub(tag, "_", " ") .. ":",
-                        no_prefix_markup = true,
-                        no_bold = true,
-                        second_highlight = false
-                    }
+                       {
+                           prefix = string.gsub(tag, "_", " ") .. ":",
+                           no_prefix_markup = true,
+                           no_bold = true,
+                           second_highlight = false
+                       }
                 )
                 tags_displayed = tags_displayed + 1
             end
@@ -1089,61 +1099,61 @@ local function add_file(s, print_cache, print_tags)
     local ed_cond = (edition and editions > 1)
     if ed_cond then
         append_property(s, "edition-list/" .. tostring(edition) .. "/title",
-            { prefix = "Edition:" })
+                        { prefix = "Edition:" })
         append_property(s, "edition-list/count",
-            {
-                prefix = "(" .. tostring(edition + 1) .. "/",
-                suffix = ")",
-                nl = "",
-                indent = " ",
-                prefix_sep = " ",
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            })
+                        {
+                            prefix = "(" .. tostring(edition + 1) .. "/",
+                            suffix = ")",
+                            nl = "",
+                            indent = " ",
+                            prefix_sep = " ",
+                            no_prefix_markup = true,
+                            no_bold = true,
+                            second_highlight = false
+                        })
     end
 
     local ch_index = mp.get_property_number("chapter")
     if ch_index and ch_index >= 0 then
         append_property(s, "chapter-list/" .. tostring(ch_index) .. "/title",
-            {
-                prefix = "Chapter:",
-                nl = ed_cond and "" or o.nl,
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+                        {
+                            prefix = "Chapter:",
+                            nl = ed_cond and "" or o.nl,
+                            no_prefix_markup = true,
+                            no_bold = true,
+                            second_highlight = false
+                        }
         )
         append_property(s, "chapter-list/count",
-            {
-                prefix = "(" .. tostring(ch_index + 1) .. " /",
-                suffix = ")",
-                nl = "",
-                indent = " ",
-                prefix_sep = " ",
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            })
+                        {
+                            prefix = "(" .. tostring(ch_index + 1) .. " /",
+                            suffix = ")",
+                            nl = "",
+                            indent = " ",
+                            prefix_sep = " ",
+                            no_prefix_markup = true,
+                            no_bold = true,
+                            second_highlight = false
+                        })
     end
 
     local fs = append_property(s, "file-size",
-        {
-            prefix = "Size:",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+                               {
+                                   prefix = "Size:",
+                                   no_prefix_markup = true,
+                                   no_bold = true,
+                                   second_highlight = false
+                               }
     )
     append_property(s, "file-format",
-        {
-            prefix = "Format/Protocol:",
-            nl = o.nl,
-            indent = o.indent,
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+                    {
+                        prefix = "Format/Protocol:",
+                        nl = o.nl,
+                        indent = o.indent,
+                        no_prefix_markup = true,
+                        no_bold = true,
+                        second_highlight = false
+                    }
     )
 
     if not print_cache then
@@ -1159,24 +1169,24 @@ local function add_file(s, print_cache, print_tags)
     local demuxer_secs = mp.get_property_number("demuxer-cache-duration", 0)
     if demuxer_cache + demuxer_secs > 0 then
         append(s, utils.format_bytes_humanized(demuxer_cache),
-            {
-                prefix = "Total Cache:",
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+               {
+                   prefix = "Total Cache:",
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               }
         )
         append(s, format("%.1f", demuxer_secs),
-            {
-                prefix = "(",
-                suffix = " sec)",
-                nl = "",
-                prefix_sep = "",
-                indent = o.prefix_sep,
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+               {
+                   prefix = "(",
+                   suffix = " sec)",
+                   nl = "",
+                   prefix_sep = "",
+                   indent = o.prefix_sep,
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               }
         )
     end
 end
@@ -1201,13 +1211,13 @@ local function append_resolution(s, r, prefix, w_prop, h_prop, video_res)
     w_prop = w_prop or "w"
     h_prop = h_prop or "h"
     if append(s, r[w_prop],
-            {
-                prefix = prefix,
-                no_prefix_markup = false,
-                no_bold = false,
-                second_highlight = true
-            }
-        ) then
+              {
+                  prefix = prefix,
+                  no_prefix_markup = false,
+                  no_bold = false,
+                  second_highlight = true
+              }
+    ) then
         append(s, r[h_prop], {
             prefix = "x",
             nl = "",
@@ -1271,17 +1281,17 @@ local function append_resolution(s, r, prefix, w_prop, h_prop, video_res)
         end
         -- We can skip crop if it is the same as video decoded resolution
         if r["crop-w"] and (not video_res or
-                not crop_noop(r[w_prop], r[h_prop], r)) then
+            not crop_noop(r[w_prop], r[h_prop], r)) then
             append(s, format("[x: %d, y: %d, w: %d, h: %d]",
-                    r["crop-x"], r["crop-y"], r["crop-w"], r["crop-h"]),
-                {
-                    prefix = "",
-                    nl = "",
-                    indent = "",
-                    no_prefix_markup = true,
-                    no_bold = true,
-                    second_highlight = true
-                }
+                             r["crop-x"], r["crop-y"], r["crop-w"], r["crop-h"]),
+                   {
+                       prefix = "",
+                       nl = "",
+                       indent = "",
+                       no_prefix_markup = true,
+                       no_bold = true,
+                       second_highlight = true
+                   }
             )
         end
     end
@@ -1327,27 +1337,27 @@ local function append_hdr(s, hdr, video_out)
 
     if has_dml or has_cll or has_fall then
         append(s, "",
-            {
-                prefix = video_out and "" or "HDR10:",
-                prefix_sep = video_out and "" or nil,
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+               {
+                   prefix = video_out and "" or "HDR10:",
+                   prefix_sep = video_out and "" or nil,
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               }
         )
         if has_dml then
             -- libplacebo uses close to zero values as "defined zero"
             hdr["min-luma"] = hdr["min-luma"] <= 1e-6 and 0 or hdr["min-luma"]
             append(s, format("%.2g / %.0f", hdr["min-luma"], hdr["max-luma"]),
-                {
-                    prefix = display_prefix,
-                    suffix = " cd/m²",
-                    nl = "",
-                    indent = indent,
-                    no_prefix_markup = true,
-                    no_bold = true,
-                    second_highlight = false
-                }
+                   {
+                       prefix = display_prefix,
+                       suffix = " cd/m²",
+                       nl = "",
+                       indent = indent,
+                       no_prefix_markup = true,
+                       no_bold = true,
+                       second_highlight = false
+                   }
             )
             indent = o.prefix_sep .. o.prefix_sep
         end
@@ -1379,53 +1389,53 @@ local function append_hdr(s, hdr, video_out)
     indent = o.prefix_sep .. o.prefix_sep
 
     if hdr["scene-max-r"] or hdr["scene-max-g"] or
-        hdr["scene-max-b"] or hdr["scene-avg"] then
+    hdr["scene-max-b"] or hdr["scene-avg"] then
         append(s, "", { prefix = "HDR10+:", no_prefix_markup = true })
         append(s, format("%.1f / %.1f / %.1f", hdr["scene-max-r"] or 0,
-                hdr["scene-max-g"] or 0, hdr["scene-max-b"] or 0),
-            {
-                prefix = "MaxRGB:",
-                suffix = " cd/m²",
-                nl = "",
-                indent = "",
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+                         hdr["scene-max-g"] or 0, hdr["scene-max-b"] or 0),
+               {
+                   prefix = "MaxRGB:",
+                   suffix = " cd/m²",
+                   nl = "",
+                   indent = "",
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               }
         )
         append(s, format("%.1f", hdr["scene-avg"] or 0),
-            {
-                prefix = "Avg:",
-                suffix = " cd/m²",
-                nl = "",
-                indent = indent,
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+               {
+                   prefix = "Avg:",
+                   suffix = " cd/m²",
+                   nl = "",
+                   indent = indent,
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               }
         )
     end
 
     if hdr["max-pq-y"] and hdr["avg-pq-y"] then
         append(s, "", { prefix = "PQ(Y):", no_prefix_markup = true })
         append(s, format("%.2f cd/m² (%.2f%% PQ)", pq_eotf(hdr["max-pq-y"]),
-            hdr["max-pq-y"] * 100), {
-            prefix = "Max:",
-            nl = "",
-            indent = "",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        })
+                         hdr["max-pq-y"] * 100), {
+                   prefix = "Max:",
+                   nl = "",
+                   indent = "",
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               })
         append(s, format("%.2f cd/m² (%.2f%% PQ)", pq_eotf(hdr["avg-pq-y"]),
-            hdr["avg-pq-y"] * 100), {
-            prefix = "Avg:",
-            nl = "",
-            indent = indent,
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        })
+                         hdr["avg-pq-y"] * 100), {
+                   prefix = "Avg:",
+                   nl = "",
+                   indent = indent,
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               })
     end
 end
 
@@ -1448,62 +1458,62 @@ local function append_img_params(s, r, ro)
 
     local pixel_format = r["hw-pixelformat"] or r["pixelformat"]
     append(s, pixel_format,
-        {
-            prefix = "Format:",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "Format:",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     append(s, r["colorlevels"],
-        {
-            prefix = "Levels:",
-            nl = "",
-            indent = indent,
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "Levels:",
+               nl = "",
+               indent = indent,
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     if r["chroma-location"] and r["chroma-location"] ~= "unknown" then
         append(s, r["chroma-location"],
-            {
-                prefix = "Chroma Loc:",
-                nl = "",
-                indent = indent,
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+               {
+                   prefix = "Chroma Loc:",
+                   nl = "",
+                   indent = indent,
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               }
         )
     end
 
     -- Group these together to save vertical space
     append(s, r["colormatrix"],
-        {
-            prefix = "Colormatrix:",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "Colormatrix:",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     if r["prim-red-x"] or r["prim-red-y"] or
-        r["prim-green-x"] or r["prim-green-y"] or
-        r["prim-blue-x"] or r["prim-blue-y"] or
-        r["prim-white-x"] or r["prim-white-y"] then
+    r["prim-green-x"] or r["prim-green-y"] or
+    r["prim-blue-x"] or r["prim-blue-y"] or
+    r["prim-white-x"] or r["prim-white-y"] then
         append(s, string.format("[%.3f %.3f, %.3f %.3f, %.3f %.3f, %.3f %.3f]",
-                r["prim-red-x"] or 0, r["prim-red-y"] or 0,
-                r["prim-green-x"] or 0, r["prim-green-y"] or 0,
-                r["prim-blue-x"] or 0, r["prim-blue-y"] or 0,
-                r["prim-white-x"] or 0, r["prim-white-y"] or 0),
-            {
-                prefix = "Primaries:",
-                nl = "",
-                indent = indent,
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+                                r["prim-red-x"] or 0, r["prim-red-y"] or 0,
+                                r["prim-green-x"] or 0, r["prim-green-y"] or 0,
+                                r["prim-blue-x"] or 0, r["prim-blue-y"] or 0,
+                                r["prim-white-x"] or 0, r["prim-white-y"] or 0),
+               {
+                   prefix = "Primaries:",
+                   nl = "",
+                   indent = indent,
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               }
         )
         append(s, r["primaries"], {
             prefix = "in",
@@ -1516,25 +1526,25 @@ local function append_img_params(s, r, ro)
         })
     else
         append(s, r["primaries"],
-            {
-                prefix = "Primaries:",
-                nl = "",
-                indent = indent,
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+               {
+                   prefix = "Primaries:",
+                   nl = "",
+                   indent = indent,
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               }
         )
     end
     append(s, r["gamma"],
-        {
-            prefix = "Transfer:",
-            nl = "",
-            indent = indent,
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "Transfer:",
+               nl = "",
+               indent = indent,
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
 end
 
@@ -1551,14 +1561,14 @@ local function append_fps(s, prop, eprop)
     local indent = o.indent
 
     if fps ~= "" and append(s, fps,
-            {
-                prefix = prefix,
-                suffix = unit .. suffix,
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
-        ) then
+                            {
+                                prefix = prefix,
+                                suffix = unit .. suffix,
+                                no_prefix_markup = true,
+                                no_bold = true,
+                                second_highlight = false
+                            }
+    ) then
         prefix = ""
         nl = ""
         indent = ""
@@ -1566,7 +1576,7 @@ local function append_fps(s, prop, eprop)
 
     if not single and efps ~= "" then
         append(s, efps,
-            { prefix = prefix, suffix = unit .. esuffix, nl = nl, indent = indent, no_prefix_markup = true })
+               { prefix = prefix, suffix = unit .. esuffix, nl = nl, indent = indent, no_prefix_markup = true })
     end
 end
 
@@ -1578,32 +1588,32 @@ local function add_video_out(s)
     end
 
     append(s, "",
-        {
-            prefix = "Video Out:",
-            nl = o.nl,
-            indent = ""
-        }
+           {
+               prefix = "Video Out:",
+               nl = o.nl,
+               indent = ""
+           }
     )
     append(s, vo,
-        {
-            prefix = "Driver:",
-            prefix_sep = " ",
-            nl = o.nl,
-            no_prefix_markup = true,
-            no_bold = false,
-            second_highlight = true
-        }
+           {
+               prefix = "Driver:",
+               prefix_sep = " ",
+               nl = o.nl,
+               no_prefix_markup = true,
+               no_bold = false,
+               second_highlight = true
+           }
     )
     append(s, mp.get_property_native("current-gpu-context"),
-        {
-            prefix = "Context:",
-            prefix_sep = " ",
-            nl = "",
-            indent = o.prefix_sep .. o.prefix_sep,
-            no_prefix_markup = true,
-            no_bold = false,
-            second_highlight = true
-        }
+           {
+               prefix = "Context:",
+               prefix_sep = " ",
+               nl = "",
+               indent = o.prefix_sep .. o.prefix_sep,
+               no_prefix_markup = true,
+               no_bold = false,
+               second_highlight = true
+           }
     )
 
     local scale = nil
@@ -1634,23 +1644,23 @@ local function add_video_out(s)
 
     append_fps(s, "display-fps", "estimated-display-fps")
     if append_property(s, "decoder-frame-drop-count",
-            {
-                prefix = "Dropped Frames:",
-                suffix = " (decoder)",
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
-        ) then
+                       {
+                           prefix = "Dropped Frames:",
+                           suffix = " (decoder)",
+                           no_prefix_markup = true,
+                           no_bold = true,
+                           second_highlight = false
+                       }
+    ) then
         append_property(s, "frame-drop-count",
-            {
-                suffix = " (output)",
-                nl = "",
-                indent = "",
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+                        {
+                            suffix = " (output)",
+                            nl = "",
+                            indent = "",
+                            no_prefix_markup = true,
+                            no_bold = true,
+                            second_highlight = false
+                        }
         )
     end
     append_display_sync(s)
@@ -1658,22 +1668,22 @@ local function add_video_out(s)
 
     if mp.get_property_native("deinterlace-active") then
         append_property(s, "deinterlace",
-            {
-                prefix = "Deinterlacing:",
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+                        {
+                            prefix = "Deinterlacing:",
+                            no_prefix_markup = true,
+                            no_bold = true,
+                            second_highlight = false
+                        }
         )
     end
     append_property(s, "avsync",
-        {
-            prefix = "A-V:",
-            prefix_sep = " ",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+                    {
+                        prefix = "A-V:",
+                        prefix_sep = " ",
+                        no_prefix_markup = true,
+                        no_bold = true,
+                        second_highlight = false
+                    }
     )
 end
 
@@ -1692,64 +1702,64 @@ local function add_video(s)
     local track = mp.get_property_native("current-tracks/video")
     local track_type = (track and track.image) and "Image:" or "Video:"
     append(s, "",
-        {
-            prefix = track_type,
-            nl = o.nl,
-            indent = "",
-            no_prefix_markup = false,
-            no_bold = false,
-            second_highlight = false
-        }
+           {
+               prefix = track_type,
+               nl = o.nl,
+               indent = "",
+               no_prefix_markup = false,
+               no_bold = false,
+               second_highlight = false
+           }
     )
     if track and append(s, track["codec-desc"],
-            {
-                prefix = "Codec:",
-                prefix_sep = " ",
-                nl = o.nl,
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
-        ) then
+                        {
+                            prefix = "Codec:",
+                            prefix_sep = " ",
+                            nl = o.nl,
+                            no_prefix_markup = true,
+                            no_bold = true,
+                            second_highlight = false
+                        }
+    ) then
         append(s, track["codec-profile"],
-            {
-                prefix = "[",
-                nl = "",
-                indent = " ",
-                prefix_sep = "",
-                suffix = "]",
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+               {
+                   prefix = "[",
+                   nl = "",
+                   indent = " ",
+                   prefix_sep = "",
+                   suffix = "]",
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               }
         )
         if track["codec"] ~= track["decoder"] then
             append(s, track["decoder"],
-                {
-                    prefix = "[",
-                    nl = "",
-                    indent = " ",
-                    prefix_sep = "",
-                    suffix = "]",
-                    no_prefix_markup = true,
-                    no_bold = true,
-                    second_highlight = false
-                }
+                   {
+                       prefix = "[",
+                       nl = "",
+                       indent = " ",
+                       prefix_sep = "",
+                       suffix = "]",
+                       no_prefix_markup = true,
+                       no_bold = true,
+                       second_highlight = false
+                   }
             )
         end
         append_property(s, "hwdec-current",
-            {
-                prefix = "HW Decoder:",
-                suffix = "",
-                nl = o.nl,
-                no_prefix_markup = false,
-                no_bold = false,
-                second_highlight = true
-            },
-            {
-                no = true,
-                [""] = true
-            }, true
+                        {
+                            prefix = "HW Decoder:",
+                            suffix = "",
+                            nl = o.nl,
+                            no_prefix_markup = false,
+                            no_bold = false,
+                            second_highlight = true
+                        },
+                        {
+                            no = true,
+                            [""] = true
+                        }, true
         )
     end
     append_img_params(s, r, ro)
@@ -1809,12 +1819,12 @@ local function add_video(s)
     end
     append_hdr(s, ro)
     append_property(s, "video-bitrate",
-        {
-            prefix = "Bitrate:",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+                    {
+                        prefix = "Bitrate:",
+                        no_prefix_markup = true,
+                        no_bold = true,
+                        second_highlight = false
+                    }
     )
     append_filters(s, "vf", "Filters:")
 end
@@ -1836,14 +1846,14 @@ local function add_audio(s)
     end
 
     append(s, "",
-        {
-            prefix = "Audio:",
-            nl = o.nl,
-            indent = "",
-            no_prefix_markup = false,
-            no_bold = false,
-            second_highlight = false
-        }
+           {
+               prefix = "Audio:",
+               nl = o.nl,
+               indent = "",
+               no_prefix_markup = false,
+               no_bold = false,
+               second_highlight = false
+           }
     )
     local track = mp.get_property_native("current-tracks/audio")
     if track then
@@ -1857,15 +1867,15 @@ local function add_audio(s)
             second_highlight = true
         })
         append(s, track["codec-desc"],
-            {
-                prefix = "Codec:",
-                prefix_sep = " ",
-                nl = o.nl,
-                indent = o.indent,
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+               {
+                   prefix = "Codec:",
+                   prefix_sep = " ",
+                   nl = o.nl,
+                   indent = o.indent,
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               }
         )
         append(s, track["codec-profile"], {
             prefix = "[",
@@ -1891,42 +1901,42 @@ local function add_audio(s)
         end
     end
     local dev = append_property(s, "audio-device",
-        {
-            prefix = "Device:",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+                                {
+                                    prefix = "Device:",
+                                    no_prefix_markup = true,
+                                    no_bold = true,
+                                    second_highlight = false
+                                }
     )
     local ao_mute = mp.get_property_native("ao-mute") and " (Muted)" or ""
     append_property(s, "ao-volume",
-        {
-            prefix = "Device Volume:",
-            suffix = "%" .. ao_mute,
-            nl = o.nl,
-            indent = o.indent,
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+                    {
+                        prefix = "Device Volume:",
+                        suffix = "%" .. ao_mute,
+                        nl = o.nl,
+                        indent = o.indent,
+                        no_prefix_markup = true,
+                        no_bold = true,
+                        second_highlight = false
+                    }
     )
     if math.abs(mp.get_property_native("audio-delay")) > 1e-6 then
         append_property(s, "audio-delay",
-            {
-                prefix = "A-V delay:",
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+                        {
+                            prefix = "A-V delay:",
+                            no_prefix_markup = true,
+                            no_bold = true,
+                            second_highlight = false
+                        }
         )
     end
     local cc = append(s, merge(r, ro, "channel-count"),
-        {
-            prefix = "Channels:",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+                      {
+                          prefix = "Channels:",
+                          no_prefix_markup = true,
+                          no_bold = true,
+                          second_highlight = false
+                      }
     )
     append(s, merge(r, ro, "format"), {
         prefix = "Format:",
@@ -1937,21 +1947,21 @@ local function add_audio(s)
         second_highlight = false
     })
     append(s, merge(r, ro, "samplerate"),
-        {
-            prefix = "Sample Rate:",
-            suffix = " Hz",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "Sample Rate:",
+               suffix = " Hz",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     append_property(s, "audio-bitrate",
-        {
-            prefix = "Bitrate:",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+                    {
+                        prefix = "Bitrate:",
+                        no_prefix_markup = true,
+                        no_bold = true,
+                        second_highlight = false
+                    }
     )
     append_filters(s, "af", "Filters:")
 end
@@ -2029,71 +2039,71 @@ local function default_stats()
     eval_ass_formatting()
     add_header(header)
     append(header, "",
-        {
-            prefix = format("%s: %s", desc, scroll_hint()),
-            nl = "",
-            indent = "",
-            no_prefix_markup = false,
-            no_bold = false,
-            second_highlight = false
-        }
+           {
+               prefix = format("%s: %s", desc, scroll_hint()),
+               nl = "",
+               indent = "",
+               no_prefix_markup = false,
+               no_bold = false,
+               second_highlight = false
+           }
     )
     append(header, "", { nl = o.nl })
     header = { table.concat(header) }
     add_displays(stats)
     append(stats, "",
-        {
-            prefix = "",
-            nl = o.nl,
-            indent = "",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "",
+               nl = o.nl,
+               indent = "",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     add_video_out(stats)
     append(stats, "",
-        {
-            prefix = "",
-            nl = o.nl,
-            indent = "",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "",
+               nl = o.nl,
+               indent = "",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     add_video(stats)
     append(stats, "",
-        {
-            prefix = "",
-            nl = o.nl,
-            indent = "",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "",
+               nl = o.nl,
+               indent = "",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     add_audio(stats)
     append(stats, "",
-        {
-            prefix = "",
-            nl = o.nl,
-            indent = "",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "",
+               nl = o.nl,
+               indent = "",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     add_file(stats, true, true)
     append(stats, "",
-        {
-            prefix = "",
-            nl = o.nl,
-            indent = "",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "",
+               nl = o.nl,
+               indent = "",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     add_profiles(stats)
     return finalize_page(header, stats, true)
@@ -2117,14 +2127,14 @@ local function keybinding_info(after_scroll, bindlist)
     add_header(header)
     local prefix = bindlist and page.desc or page.desc .. ":" .. scroll_hint(true)
     append(header, "",
-        {
-            prefix = prefix,
-            nl = "",
-            indent = "",
-            no_prefix_markup = false,
-            no_bold = false,
-            second_highlight = false
-        }
+           {
+               prefix = prefix,
+               nl = "",
+               indent = "",
+               no_prefix_markup = false,
+               no_bold = false,
+               second_highlight = false
+           }
     )
     header = { table.concat(header) }
 
@@ -2166,95 +2176,104 @@ local function add_track(c, t, i)
 
     local type = t.image and "Image" or t["type"]:sub(1, 1):upper() .. t["type"]:sub(2)
     append(c, "",
-        {
-            prefix = type .. ":",
-            nl = o.nl .. o.nl,
-            indent = "",
-            no_prefix_markup = false,
-            no_bold = false,
-            second_highlight = false
-        }
+           {
+               prefix = type .. ":",
+               nl = o.nl .. o.nl,
+               indent = "",
+               no_prefix_markup = false,
+               no_bold = false,
+               second_highlight = false
+           }
     )
     append(c, t["title"],
-        {
-            prefix_sep = "",
-            nl = "",
-            indent = "",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix_sep = "",
+               nl = "",
+               indent = "",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     append(c, t["id"],
-        {
-            prefix = "ID:",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "ID:",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     append(c, t["src-id"],
-        {
-            prefix = "Demuxer ID:",
-            nl = "",
-            indent = o.prefix_sep .. o.prefix_sep,
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "Demuxer ID:",
+               nl = "",
+               indent = o.prefix_sep .. o.prefix_sep,
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     append(c, t["program-id"],
-        {
-            prefix = "Program ID:",
-            nl = "",
-            indent = o.prefix_sep .. o.prefix_sep,
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "Program ID:",
+               nl = "",
+               indent = o.prefix_sep .. o.prefix_sep,
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     append(c, t["ff-index"],
-        {
-            prefix = "FFmpeg Index:",
-            nl = "",
-            indent = o.prefix_sep .. o.prefix_sep,
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "FFmpeg Index:",
+               nl = "",
+               indent = o.prefix_sep .. o.prefix_sep,
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     append(c, t["external-filename"],
-        {
-            prefix = "File:",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "File:",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     append(c, "",
-        {
-            prefix = "Flags:",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "Flags:",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
-    local flags = { "default", "forced", "dependent", "visual-impaired",
-        "hearing-impaired", "original", "commentary", "image",
-        "albumart", "external" }
+    local flags = {
+        "default",
+        "forced",
+        "dependent",
+        "visual-impaired",
+        "hearing-impaired",
+        "original",
+        "commentary",
+        "image",
+        "albumart",
+        "external"
+    }
     local any = false
     for _, flag in ipairs(flags) do
         if t[flag] then
             append(c, flag,
-                {
-                    prefix = any and ", " or "",
-                    nl = "",
-                    indent = "",
-                    prefix_sep = "",
-                    no_prefix_markup = true,
-                    no_bold = true,
-                    second_highlight = false
-                }
+                   {
+                       prefix = any and ", " or "",
+                       nl = "",
+                       indent = "",
+                       prefix_sep = "",
+                       no_prefix_markup = true,
+                       no_bold = true,
+                       second_highlight = false
+                   }
             )
             any = true
         end
@@ -2263,154 +2282,154 @@ local function add_track(c, t, i)
         table.remove(c)
     end
     if append(c, t["codec-desc"],
-            {
-                prefix = "Codec:",
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
-        ) then
+              {
+                  prefix = "Codec:",
+                  no_prefix_markup = true,
+                  no_bold = true,
+                  second_highlight = false
+              }
+    ) then
         append(c, t["codec-profile"],
-            {
-                prefix = "[",
-                nl = "",
-                indent = " ",
-                prefix_sep = "",
-                suffix = "]",
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+               {
+                   prefix = "[",
+                   nl = "",
+                   indent = " ",
+                   prefix_sep = "",
+                   suffix = "]",
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               }
         )
         if t["codec"] ~= t["decoder"] then
             append(c, t["decoder"],
-                {
-                    prefix = "[",
-                    nl = "",
-                    indent = " ",
-                    prefix_sep = "",
-                    suffix = "]",
-                    no_prefix_markup = true,
-                    no_bold = true,
-                    second_highlight = false
-                }
+                   {
+                       prefix = "[",
+                       nl = "",
+                       indent = " ",
+                       prefix_sep = "",
+                       suffix = "]",
+                       no_prefix_markup = true,
+                       no_bold = true,
+                       second_highlight = false
+                   }
             )
         end
     end
     append(c, t["lang"],
-        {
-            prefix = "Language:",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "Language:",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     append(c, t["demux-channel-count"],
-        {
-            prefix = "Channels:",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "Channels:",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     append(c, t["demux-channels"],
-        {
-            prefix = "Channel Layout:",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "Channel Layout:",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     append(c, t["demux-samplerate"],
-        {
-            prefix = "Sample Rate:",
-            suffix = " Hz",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "Sample Rate:",
+               suffix = " Hz",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     local function B(b) return b and string.format("%.2f", b / 1024) end
     local bitrate = append(c, B(t["demux-bitrate"]),
-        {
-            prefix = "Bitrate:",
-            suffix = " kbps",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+                           {
+                               prefix = "Bitrate:",
+                               suffix = " kbps",
+                               no_prefix_markup = true,
+                               no_bold = true,
+                               second_highlight = false
+                           }
     )
     append(c, B(t["hls-bitrate"]),
-        {
-            prefix = "HLS Bitrate:",
-            suffix = " kbps",
-            nl = bitrate and "" or o.nl,
-            indent = bitrate and o.prefix_sep .. o.prefix_sep,
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "HLS Bitrate:",
+               suffix = " kbps",
+               nl = bitrate and "" or o.nl,
+               indent = bitrate and o.prefix_sep .. o.prefix_sep,
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     append_resolution(c, {
-        w = t["demux-w"],
-        h = t["demux-h"],
-        ["crop-x"] = t["demux-crop-x"],
-        ["crop-y"] = t["demux-crop-y"],
-        ["crop-w"] = t["demux-crop-w"],
-        ["crop-h"] = t["demux-crop-h"]
-    }, "Resolution:")
+                          w = t["demux-w"],
+                          h = t["demux-h"],
+                          ["crop-x"] = t["demux-crop-x"],
+                          ["crop-y"] = t["demux-crop-y"],
+                          ["crop-w"] = t["demux-crop-w"],
+                          ["crop-h"] = t["demux-crop-h"]
+                      }, "Resolution:")
     if not t["image"] and t["demux-fps"] then
         append_fps(c, "track-list/" .. i .. "/demux-fps", "")
     end
     append(c, t["format-name"],
-        {
-            prefix = "Format:",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "Format:",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     append(c, t["demux-rotation"],
-        {
-            prefix = "Rotation:",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "Rotation:",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     if t["demux-par"] then
         local num, den = float2rational(t["demux-par"])
         append(c, string.format("%d:%d", num, den),
-            {
-                prefix = "Pixel Aspect Ratio:",
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+               {
+                   prefix = "Pixel Aspect Ratio:",
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               }
         )
     end
     local track_rg = t["replaygain-track-peak"] ~= nil or t["replaygain-track-gain"] ~= nil
     local album_rg = t["replaygain-album-peak"] ~= nil or t["replaygain-album-gain"] ~= nil
     if track_rg or album_rg then
         append(c, "",
-            {
-                prefix = "Replay Gain:",
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+               {
+                   prefix = "Replay Gain:",
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               }
         )
     end
     if track_rg then
         append(c, "",
-            {
-                prefix = "Track:",
-                indent = o.indent .. o.prefix_sep,
-                prefix_sep = "",
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+               {
+                   prefix = "Track:",
+                   indent = o.indent .. o.prefix_sep,
+                   prefix_sep = "",
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               }
         )
         append(c, t["replaygain-track-gain"], {
             prefix = "Gain:",
@@ -2433,61 +2452,61 @@ local function add_track(c, t, i)
     end
     if album_rg then
         append(c, "",
-            {
-                prefix = "Album:",
-                indent = o.indent .. o.prefix_sep,
-                prefix_sep = "",
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+               {
+                   prefix = "Album:",
+                   indent = o.indent .. o.prefix_sep,
+                   prefix_sep = "",
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               }
         )
         append(c, t["replaygain-album-gain"],
-            {
-                prefix = "Gain:",
-                suffix = " dB",
-                nl = "",
-                indent = o.prefix_sep,
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+               {
+                   prefix = "Gain:",
+                   suffix = " dB",
+                   nl = "",
+                   indent = o.prefix_sep,
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               }
         )
         append(c, t["replaygain-album-peak"],
-            {
-                prefix = "Peak:",
-                suffix = " dB",
-                nl = "",
-                indent = o.prefix_sep,
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+               {
+                   prefix = "Peak:",
+                   suffix = " dB",
+                   nl = "",
+                   indent = o.prefix_sep,
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               }
         )
     end
     if t["dolby-vision-profile"] or t["dolby-vision-level"] then
         append(c, "",
-            {
-                prefix = "Dolby Vision:"
-            }
+               {
+                   prefix = "Dolby Vision:"
+               }
         )
         append(c, t["dolby-vision-profile"],
-            {
-                prefix = "Profile:",
-                nl = "",
-                indent = ""
-            }
+               {
+                   prefix = "Profile:",
+                   nl = "",
+                   indent = ""
+               }
         )
         append(c, t["dolby-vision-level"],
-            {
-                prefix = "Level:",
-                nl = "",
-                indent = t["dolby-vision-profile"] and
-                    o.prefix_sep .. o.prefix_sep or "",
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+               {
+                   prefix = "Level:",
+                   nl = "",
+                   indent = t["dolby-vision-profile"] and
+                       o.prefix_sep .. o.prefix_sep or "",
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               }
         )
     end
 end
@@ -2498,14 +2517,14 @@ local function track_info()
     add_header(h)
     local desc = pages[o.key_page_5].desc
     append(h, "",
-        {
-            prefix = format("%s:%s", desc, scroll_hint()),
-            nl = "",
-            indent = "",
-            no_prefix_markup = false,
-            no_bold = false,
-            second_highlight = false
-        }
+           {
+               prefix = format("%s:%s", desc, scroll_hint()),
+               nl = "",
+               indent = "",
+               no_prefix_markup = false,
+               no_bold = false,
+               second_highlight = false
+           }
     )
     h = { table.concat(h) }
     table.insert(c, o.nl .. o.nl)
@@ -2524,14 +2543,14 @@ local function perf_stats()
     add_header(header)
     local page = pages[o.key_page_0]
     append(header, "",
-        {
-            prefix = format("%s:%s", page.desc, scroll_hint()),
-            nl = "",
-            indent = "",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = format("%s:%s", page.desc, scroll_hint()),
+               nl = "",
+               indent = "",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     append_general_perfdata(content)
     header = { table.concat(header) }
@@ -2552,14 +2571,14 @@ local function cache_stats()
     eval_ass_formatting()
     add_header(stats)
     append(stats, "",
-        {
-            prefix = "Cache Info:",
-            nl = "",
-            indent = "",
-            no_prefix_markup = false,
-            no_bold = false,
-            second_highlight = false
-        }
+           {
+               prefix = "Cache Info:",
+               nl = "",
+               indent = "",
+               no_prefix_markup = false,
+               no_bold = false,
+               second_highlight = false
+           }
     )
 
     local info = mp.get_property_native("demuxer-cache-state")
@@ -2572,12 +2591,12 @@ local function cache_stats()
     local b = info["cache-end"]
 
     append(stats, opt_time(a) .. " - " .. opt_time(b),
-        {
-            prefix = "Packet Queue:",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "Packet Queue:",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
 
     local r = nil
@@ -2588,18 +2607,18 @@ local function cache_stats()
     local r_graph = nil
     if display_timer and not display_timer.oneshot and o.use_ass and o.plot_cache then
         r_graph = generate_graph(cache_ahead_buf, cache_ahead_buf.pos,
-            cache_ahead_buf.len, cache_ahead_buf.max,
-            nil, 0.8, 1)
+                                 cache_ahead_buf.len, cache_ahead_buf.max,
+                                 nil, 0.8, 1)
         r_graph = o.prefix_sep .. r_graph
     end
     append(stats, opt_time(r),
-        {
-            prefix = "Readahead:",
-            suffix = r_graph,
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "Readahead:",
+               suffix = r_graph,
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
 
     -- These states are not necessarily exclusive. They're about potentially
@@ -2616,47 +2635,47 @@ local function cache_stats()
         state = "inactive"
     end
     append(stats, state,
-        {
-            prefix = "State:",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "State:",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
 
     local speed = info["raw-input-rate"] or 0
     local speed_graph = nil
     if display_timer and not display_timer.oneshot and o.use_ass and o.plot_cache then
         speed_graph = generate_graph(cache_speed_buf, cache_speed_buf.pos,
-            cache_speed_buf.len, cache_speed_buf.max,
-            nil, 0.8, 1)
+                                     cache_speed_buf.len, cache_speed_buf.max,
+                                     nil, 0.8, 1)
         speed_graph = o.prefix_sep .. speed_graph
     end
     append(stats, utils.format_bytes_humanized(speed) .. "/s",
-        {
-            prefix = "Speed:",
-            suffix = speed_graph,
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "Speed:",
+               suffix = speed_graph,
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
 
     append(stats, utils.format_bytes_humanized(info["total-bytes"]),
-        {
-            prefix = "Total RAM:",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "Total RAM:",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     append(stats, utils.format_bytes_humanized(info["fw-bytes"]),
-        {
-            prefix = "Forward RAM:",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "Forward RAM:",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
 
     local fc = info["file-cache-bytes"]
@@ -2666,69 +2685,69 @@ local function cache_stats()
         fc = "(disabled)"
     end
     append(stats, fc,
-        {
-            prefix = "Disk Cache:",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "Disk Cache:",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
 
     append(stats, info["debug-low-level-seeks"],
-        {
-            prefix = "Media Seeks:",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "Media Seeks:",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     append(stats, info["debug-byte-level-seeks"],
-        {
-            prefix = "Stream Seeks:",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "Stream Seeks:",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
 
     append(stats, "",
-        {
-            prefix = "Ranges:",
-            nl = o.nl .. o.nl,
-            indent = "",
-            no_prefix_markup = false,
-            no_bold = false,
-            second_highlight = false
-        }
+           {
+               prefix = "Ranges:",
+               nl = o.nl .. o.nl,
+               indent = "",
+               no_prefix_markup = false,
+               no_bold = false,
+               second_highlight = false
+           }
     )
 
     append(stats, info["bof-cached"] and "yes" or "no",
-        {
-            prefix = "Start Cached:",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "Start Cached:",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
     append(stats, info["eof-cached"] and "yes" or "no",
-        {
-            prefix = "End Cached:",
-            no_prefix_markup = true,
-            no_bold = true,
-            second_highlight = false
-        }
+           {
+               prefix = "End Cached:",
+               no_prefix_markup = true,
+               no_bold = true,
+               second_highlight = false
+           }
     )
 
     local ranges = info["seekable-ranges"] or {}
     for n, range in ipairs(ranges) do
         append(stats, mp.format_time(range["start"]) .. " - " ..
-            mp.format_time(range["end"]),
-            {
-                prefix = format("Range %s:", n),
-                no_prefix_markup = true,
-                no_bold = true,
-                second_highlight = false
-            }
+               mp.format_time(range["end"]),
+               {
+                   prefix = format("Range %s:", n),
+                   no_prefix_markup = true,
+                   no_bold = true,
+                   second_highlight = false
+               }
         )
     end
 
@@ -2809,7 +2828,7 @@ local function print_page(page, after_scroll)
         mp.set_osd_ass(0, 0, ass_content)
     else
         mp.osd_message((o.use_ass and ass_start or "") .. ass_content,
-            display_timer and display_timer.oneshot and o.duration or o.redraw_delay + 1)
+                       display_timer and display_timer.oneshot and o.duration or o.redraw_delay + 1)
     end
     mp.set_property_bool("user-data/mpv/stats/open", true)
 end
@@ -2865,9 +2884,9 @@ end
 local function bind_scroll()
     if not scroll_bound then
         mp.add_forced_key_binding(o.key_scroll_up, "__forced_" .. o.key_scroll_up,
-            scroll_up, { repeatable = true })
+                                  scroll_up, { repeatable = true })
         mp.add_forced_key_binding(o.key_scroll_down, "__forced_" .. o.key_scroll_down,
-            scroll_down, { repeatable = true })
+                                  scroll_down, { repeatable = true })
         scroll_bound = true
     end
 end
@@ -3042,7 +3061,8 @@ end
 
 -- Create the timer used for redrawing (toggling) or clearing the screen (oneshot)
 -- The duration here is not important and always set in process_key_binding()
-display_timer = mp.add_periodic_timer(o.duration,
+display_timer = mp.add_periodic_timer(
+    o.duration,
     function()
         if display_timer and display_timer.oneshot then
             display_timer:kill(); clear_screen(); remove_page_bindings()
@@ -3053,40 +3073,61 @@ display_timer = mp.add_periodic_timer(o.duration,
         else
             print_page(curr_page)
         end
-    end)
+    end
+)
 display_timer:kill()
 
 -- Single invocation key binding
-mp.add_key_binding(nil, "display-stats", function() process_key_binding(true) end,
-    { repeatable = true })
+mp.add_key_binding(
+    nil,
+    "display-stats",
+    function() process_key_binding(true) end,
+    { repeatable = true }
+)
 
 -- Toggling key binding
-mp.add_key_binding(nil, "display-stats-toggle", function() process_key_binding(false) end,
-    { repeatable = false })
+mp.add_key_binding(
+    nil,
+    "display-stats-toggle",
+    function() process_key_binding(false) end,
+    { repeatable = false }
+)
 
 for k, page in pairs(pages) do
     -- Single invocation key bindings for specific pages, e.g.:
     -- "e script-binding stats/display-page-2"
-    mp.add_key_binding(nil, "display-page-" .. page.idx, function()
-        curr_page = k
-        process_key_binding(true)
-    end, { repeatable = true })
+    mp.add_key_binding(
+        nil,
+        "display-page-" .. page.idx,
+        function()
+            curr_page = k
+            process_key_binding(true)
+        end,
+        { repeatable = true }
+    )
 
     -- Key bindings to toggle a specific page, e.g.:
     -- "h script-binding stats/display-page-4-toggle".
-    mp.add_key_binding(nil, "display-page-" .. page.idx .. "-toggle", function()
-        curr_page = k
-        process_key_binding(false)
-    end, { repeatable = false })
+    mp.add_key_binding(
+        nil,
+        "display-page-" .. page.idx .. "-toggle",
+        function()
+            curr_page = k
+            process_key_binding(false)
+        end,
+        { repeatable = false }
+    )
 end
 
 -- Reprint stats immediately when VO was reconfigured, only when toggled
-mp.register_event("video-reconfig",
+mp.register_event(
+    "video-reconfig",
     function()
         if display_timer:is_enabled() and not display_timer.oneshot then
             print_page(curr_page)
         end
-    end)
+    end
+)
 
 if o.bindlist ~= "no" then
     -- This is a special mode to print key bindings to the terminal,
