@@ -1,0 +1,5 @@
+runtime node@26.8.2 (default)
+package-manager yarn@4.18.0 (default)
+package corepack@0.36.0 / corepack, pnpm, pnpx, yarn, yarnpkg / node@26.8.2 npm@built-in (default)
+package eslint@10.10.0 / eslint / node@26.8.2 npm@built-in (default)
+package prettier@3.9.6 / prettier / node@26.8.2 npm@built-in (default)
