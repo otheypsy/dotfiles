@@ -1,8 +1,20 @@
 # PowerShell Commands
 
-## File/Folder Links
+## Symbolic Link
+
+```pwsh
+New-Item
+  -ItemType   SymbolicLink
+  -Path       "<<link_file>>"
+  -Target     "<<source_file>>"
 
 ```
-New-Item -ItemType SymbolicLink  -Path "<<link_file>>"    -Target "<<source_file>>"
-New-Item -ItemType Junction      -Path "<<link_folder>>"  -Target "<<source_folder>>"
+
+## Junction
+
+```pwsh
+New-Item
+  -ItemType   Junction
+  -Path       "<<link_folder>>"
+  -Target     "<<source_folder>>"
 ```
