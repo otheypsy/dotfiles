@@ -2,13 +2,24 @@
 
 ## Dotfile Related Commands
 
-### Save Current Extensions
+### Save Currently Installed Extensions
+
+- Backup list of all extensions installed in local vscode instance
+- Change extension preference list destination if required
+- Script default is `~/dotfiles/vscode/User/extensions.txt`
+- Outputs a simple text file with each extension ID listed on a separate line
 
 ```powershell
-code --list-extensions > ~/dotfiles/vscode/User/extensions.txt
+code
+    --list-extensions > ~/dotfiles/vscode/User/extensions.txt
 ```
 
 ### Install Extensions Listed in Dotfiles
+
+- Change extension preference list location if required
+- Script default is `~/dotfiles/vscode/User/extensions.txt`
+- Will check extensions already installed in vscode instance
+- Will install all missing entries from preference list
 
 ```powershell
 ############################################
