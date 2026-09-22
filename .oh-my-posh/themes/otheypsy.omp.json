@@ -172,7 +172,7 @@
                     "options": {
                         "mapped_shell_names": {
                             "pwsh": "\uebc7 ",
-							"zsh": "\uebca ",
+                            "zsh": "\uebca ",
                             "bash": "\uec71 "
                         }
                     },
@@ -251,6 +251,7 @@
                 {
                     "type": "git",
                     "style": "diamond",
+                    "foreground": "p:magenta",
                     "leading_diamond": "<p:purple>  \uf142  </>",
                     "options": {
                         "branch_template": "{{ trunc 25 .Branch }}"
