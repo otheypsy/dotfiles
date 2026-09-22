@@ -403,5 +403,6 @@
     "editor.formatOnSave": true,
     "Lua.type.inferParamType": true,
     "Lua.type.checkTableShape": true,
-    "Lua.runtime.version": "Lua 5.5"
+    "Lua.runtime.version": "Lua 5.5",
+    "diffEditor.ignoreTrimWhitespace": false
 }

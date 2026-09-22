@@ -125,7 +125,7 @@
 							</function>
 					</classRange>
 					<!-- Basic lua functions support -->
-					<function 
+					<function
 							mainExpr="(function[\s]+[.\w]+(:[\w]+)?)|([.\w]+[\s]*=[\s]*function)"
 							displayMode="$className->$functionName">
 							<functionName>
@@ -136,7 +136,7 @@
 							</className>
 					</function>
 			</parser>
-			
+
 			<parser id="xml_node" displayName="XML Node" commentExpr="&lt;!--([^-]|-(?!-&gt;))*--&gt;">
 				<!-- Only match nodes with at least one attribute -->
 				<function
@@ -147,7 +147,7 @@
 					</functionName>
 				</function>
 			</parser>
-			
+
 			<parser id="xml_node" displayName="XML Node" commentExpr="&lt;!--([^-]|-(?!-&gt;))*--&gt;">
 				<!-- Only match nodes with at least one attribute -->
 				<function
@@ -157,8 +157,8 @@
 						<nameExpr expr="[^&lt;]*"/>
 					</functionName>
 				</function>
-			</parser>		
-		
+			</parser>
+
 			<!-- ========================================================= [ PHP ] -->
 			<!-- PHP - Personal Home Page / PHP Hypertext Preprocessor             -->
 
@@ -1350,9 +1350,9 @@
 						"
 				/>
 			</parser>
-			
+
 			<!-- ======================================================= [ BaanC ] -->
-			
+
 			<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			|	Based on:
 			|		https://notepad-plus-plus.org/community/topic/14494/functionlist-classrange-question

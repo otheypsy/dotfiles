@@ -2,159 +2,265 @@
     "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
     "final_space": false,
     "cursor_style": "default_blinking",
+    "patch_pwsh_bleed": true,
+    "shell_integration": true,
     "upgrade": {
         "notice": true,
         "interval": "48h",
         "auto": false,
         "source": "cdn"
     },
+    "palette": {
+        "success": "#75b798",
+        "warn": "#ffda6a",
+        "alert": "#da627d",
+        "info": "#6edff6",
+        "purple": "#906cff",
+        "pink": "#ff65b3",
+        "pale_pink": "#ffafcc",
+        "orange": "#ff9248",
+        "dark_green": "#3ec669",
+
+        "yellow": "#e5c07b",
+        "blue": "#61afef",
+        "red": "#e06c75",
+        "green": "#98c379",
+        "magenta": "#c678dd",
+        "cyan": "#56b6c2",
+        "white": "#dcdfe4"
+    },
+    "var": {
+        "ArrowBrackets": {
+            "Left": "\uf47d\uf47d",
+            "Right": "\uf460\uf460"
+        },
+        "Connector": {
+            "Start": "\u256d\u2500\uf192",
+            "Middle": "\u2502",
+            "End": "\u2570\u2500\u2771"
+        }
+    },
     "console_title_template": "{{ if .Segments.Project }} {{ .Segments.Project.Name }} {{ else }} {{.Folder}} {{ end }}",
     "blocks": [
         {
-            "alignment": "left",
-            "segments": [
-                {
-                    "type": "status",
-                    "style": "diamond",
-                    "foreground": "#75b798",
-                    "options": {
-                        "always_enabled": true
-                    },
-                    "template": "{{ if and (.Executed) (eq .Code 0) }}\n  \u29fc\u29fc Success \u29fd\u29fd \n{{ end }}"
-                },
-                {
-                    "type": "status",
-                    "style": "diamond",
-                    "foreground": "#ea868f",
-                    "options": {
-                        "always_enabled": true
-                    },
-                    "template": "{{ if and (.Executed) (ne .Code 0) }}\n  \u29fc\u29fc {{ reason .Code }} \u29fd\u29fd \n{{ end }}"
-                }
-            ],
-            "type": "prompt"
-        },
-        {
-            "alignment": "left",
             "type": "prompt",
+            "alignment": "left",
             "newline": true,
             "segments": [
                 {
                     "type": "text",
                     "style": "plain",
-                    "template": "{{ if .Root }}<#ea868f>{{else}}<#906cff>{{end}}\u256d\u2500\uf192  </>"
+                    "template": "\n"
                 },
-                {
-                    "type": "path",
-                    "style": "diamond",
-                    "foreground": "#3ec669",
-                    "options": {
-                        "style": "full"
-                    },
-                    "template": "\ue5ff  {{ .Path }}"
-                },
-                {
-                    "type": "project",
-                    "style": "diamond",
-                    "foreground": "#ffda6a",
-                    "leading_diamond": "<#906cff>  \uf142  </>",
-                    "options": {
-                        "style": "full"
-                    },
-                    "template": "{{ if .Name }}\uf135  {{ .Name }}{{ end }}"
-                },
-                {
-                    "type": "winget",
-                    "style": "diamond",
-                    "foreground": "#da627d",
-                    "leading_diamond": "<#906cff>  \uf142  </>",
-                    "options": {
-                        "cache_duration": "24h"
-                    },
-                    "cache": {
-                        "duration": "24h",
-                        "strategy": "device"
-                    },
-                    "template": "\uf409  winget {{ .UpdateCount }}"
-                }
-            ]
-        },
-        {
-            "alignment": "left",
-            "type": "prompt",
-            "newline": true,
-            "segments": [
                 {
                     "type": "text",
+                    "alias": "ConnectorStart",
                     "style": "plain",
-                    "template": "{{ if .Root }}<#ea868f>{{else}}<#906cff>{{end}}\u2502</>    "
-                },
-                {
-                    "type": "time",
-                    "style": "diamond",
-                    "foreground": "#6edff6",
-                    "options": {
-                        "time_format": "15:04:05"
-                    },
-                    "template": "\udb82\udd54  {{ .CurrentDate | date .Format }}"
-                },
-                {
-                    "type": "git",
-                    "style": "diamond",
-                    "foreground": "#75b798",
-                    "leading_diamond": "<#906cff>  \uf142  </>",
-                    "options": {
-                        "branch_template": "{{ trunc 25 .Branch }}",
-                        "fetch_status": true,
-                        "fetch_upstream_icon": true
-                    },
+                    "leading_diamond": " ",
+                    "foreground": "p:red",
                     "foreground_templates": [
-                        "{{ if or (.Working.Changed) (.Staging.Changed) }}#ff9248{{ end }}",
-                        "{{ if and (gt .Ahead 0) (gt .Behind 0) }}#da627d{{ end }}",
-                        "{{ if gt .Ahead 0 }}#da627d{{ end }}",
-                        "{{ if gt .Behind 0 }}#da627d{{ end }}"
+                        "{{ if .Root }}p:red{{ end }}",
+                        "{{ if not .Root }}p:purple{{end }}"
                     ],
-                    "template": "{{ .UpstreamIcon }}  {{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }} \uf044 {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }} \uf046 {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }} \ueb4b {{ .StashCount }}{{ end }}"
+                    "template": "{{ .Var.Connector.Start }}  "
                 },
                 {
-                    "type": "node",
-                    "style": "diamond",
-                    "foreground": "#75b798",
-                    "leading_diamond": "<#906cff>  \uf142  </>",
+                    "type": "executiontime",
+                    "style": "plain",
+                    "foreground": "p:red",
+                    "foreground_templates": [
+                        "{{ if eq .Code 0 }}p:success{{ end }}",
+                        "{{ if ne .Code 0 }}p:red{{ end }}"
+                    ],
                     "options": {
-                        "display_mode": "files",
-                        "fetch_version": true
+                        "threshold": 500,
+                        "style": "austin",
+                        "always_enabled": true
                     },
-                    "template": "\ue718  {{ .Full }}"
+                    "template": "{{ if eq .Code 0 }}\udb86\uded1  {{ else }}\udb86\udee7  {{ end }}{{ .FormattedMs }}"
                 },
                 {
-                    "type": "yarn",
+                    "type": "status",
                     "style": "diamond",
-                    "foreground": "#6ea8fe",
-                    "leading_diamond": "<#906cff>  \uf142  </>",
-                    "template": "\ue6a7  {{.Full}}"
+                    "foreground": "p:red",
+                    "leading_diamond": "<p:purple>  \uf142  </>",
+                    "foreground_templates": [
+                        "{{ if eq .Code 0 }}p:success{{ end }}",
+                        "{{ if ne .Code 0 }}p:red{{ end }}"
+                    ],
+                    "options": {
+                        "always_enabled": true
+                    },
+                    "template": "{{ if eq .Code 0 }}\udb86\ude9a  OK{{ end }}{{ if ne .Code 0 }}\udb86\ude9f  {{ reason .Code }}{{ .Code | hresult }}{{ end }}"
                 },
                 {
                     "type": "react",
                     "style": "diamond",
-                    "foreground": "#ff9248",
-                    "leading_diamond": "<#906cff>  \uf142  </>",
+                    "foreground": "p:pink",
+                    "leading_diamond": "<p:purple>  \uf142  </>",
+                    "template": "{{ if not .Error }}\ued46  {{ .Full }}{{ end }}"
+                },
+                {
+                    "type": "yarn",
+                    "style": "diamond",
+                    "foreground": "p:blue",
+                    "leading_diamond": "<p:purple>  \uf142  </>",
                     "options": {
-                        "display_mode": "files",
-                        "fetch_package_manager": true
+                        "display_mode": "context",
+                        "fetch_version": true
                     },
-                    "template": "{{ if not .Error }}{{ else }}\udb81\udf08  {{ .Full }}{{ end }}"
+                    "template": "\ue6a7  {{ .Full }}"
+                },
+                {
+                    "type": "node",
+                    "style": "diamond",
+                    "foreground": "p:green",
+                    "leading_diamond": "<p:purple>  \uf142  </>",
+                    "options": {
+                        "display_mode": "context",
+                        "fetch_version": true
+                    },
+                    "template": "\ued0d  {{ .Full }}"
                 },
                 {
                     "type": "python",
                     "style": "diamond",
-                    "foreground": "#6ea8fe",
-                    "leading_diamond": "<#906cff>  \uf142  </>",
+                    "foreground": "p:blue",
+                    "leading_diamond": "<p:purple>  \uf142  </>",
                     "options": {
                         "display_mode": "context",
-                        "fetch_virtual_env": false
+                        "fetch_virtual_env": true
                     },
                     "template": "{{ if .Error }}{{ .Error }}{{ else }}\ue73c  {{ if .Venv }}{{ .Venv }} {{ end }}{{ .Full }}{{ end }}"
+                },
+                {
+                    "type": "winget",
+                    "style": "diamond",
+                    "foreground": "p:orange",
+                    "leading_diamond": "<p:purple>  \uf142  </>",
+                    "cache": {
+                        "duration": "48h",
+                        "strategy": "device"
+                    },
+                    "template": "\udb85\udc64 {{ .UpdateCount }}"
+                }
+            ]
+        },
+        {
+            "alignment": "left",
+            "type": "prompt",
+            "newline": true,
+            "segments": [
+                {
+                    "type": "text",
+                    "alias": "ConnectorMid",
+                    "style": "plain",
+                    "foreground_templates": [
+                        "{{ if .Root }}p:red{{ end }}",
+                        "{{ if not .Root }}p:purple{{end }}"
+                    ],
+                    "template": "{{ .Var.Connector.Middle }}    "
+                },
+                {
+                    "type": "shell",
+                    "style": "diamond",
+                    "foreground": "p:red",
+                    "foreground_templates": [
+                        "{{ if .Root }}p:red{{ end }}",
+                        "{{ if not .Root }}p:pale_pink{{end }}"
+                    ],
+                    "options": {
+                        "mapped_shell_names": {
+                            "pwsh": "\uebc7 ",
+							"zsh": "\uebca ",
+                            "bash": "\uec71 "
+                        }
+                    },
+                    "template": "{{ .Name }} {{ .UserName }}"
+                },
+                {
+                    "type": "time",
+                    "alias": "TimeLocal",
+                    "style": "diamond",
+                    "foreground": "p:info",
+                    "leading_diamond": "<p:purple>  \uf142  </>",
+                    "options": {
+                        "time_format": "03:04pm MST"
+                    },
+                    "template": "\uf017  {{ .CurrentDate | date .Format }}"
+                },
+                {
+                    "type": "time",
+                    "alias": "TimeEST",
+                    "style": "diamond",
+                    "foreground": "p:info",
+                    "leading_diamond": "<p:purple>  \uf142  </>",
+                    "options": {
+                        "time_format": "03:04pm MST"
+                    },
+                    "template": "\uf017  {{ dateInZone \"03:04pm EST\" .CurrentDate \"EST\" }}"
+                },
+                {
+                    "type": "time",
+                    "alias": "Date",
+                    "style": "diamond",
+                    "foreground": "p:magenta",
+                    "leading_diamond": "<p:purple>  \uf142  </>",
+                    "options": {
+                        "time_format": "Mon, Jan 2, 06"
+                    },
+                    "template": "\ueab0  {{ .CurrentDate | date .Format }}"
+                }
+            ]
+        },
+
+        {
+            "alignment": "left",
+            "type": "prompt",
+            "newline": true,
+            "segments": [
+                {
+                    "type": "text",
+                    "alias": "ConnectorMid",
+                    "style": "plain",
+                    "foreground_templates": [
+                        "{{ if .Root }}p:red{{ end }}",
+                        "{{ if not .Root }}p:purple{{end }}"
+                    ],
+                    "template": "{{ .Var.Connector.Middle }}    "
+                },
+                {
+                    "type": "path",
+                    "style": "diamond",
+                    "foreground": "p:green",
+                    "options": {
+                        "style": "agnoster_full"
+                    },
+                    "template": "\uf114  {{ .Path }}"
+                },
+                {
+                    "type": "project",
+                    "style": "diamond",
+                    "foreground": "p:pink",
+                    "leading_diamond": "<p:purple>  \uf142  </>",
+                    "options": {
+                        "style": "full"
+                    },
+                    "template": "{{ if .Name }}\uf427  {{ .Name }}{{ end }}"
+                },
+                {
+                    "type": "git",
+                    "style": "diamond",
+                    "leading_diamond": "<p:purple>  \uf142  </>",
+                    "options": {
+                        "branch_template": "{{ trunc 25 .Branch }}"
+                    },
+                    "foreground_templates": [
+                        "{{ if or (.Working.Changed) (.Staging.Changed) }}p:yellow{{ end }}",
+                        "{{ if gt .Ahead 0 }}p:red{{ end }}",
+                        "{{ if gt .Behind 0 }}p:orange{{ end }}"
+                    ],
+                    "template": "{{ .UpstreamIcon }}  {{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }} {{ end }}{{ if .Working.Changed }} \uf044 {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} {{ end }}{{ if .Staging.Changed }} \uf046 {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }} \ueb4b {{ .StashCount }}{{ end }}"
                 }
             ]
         },
@@ -164,13 +270,22 @@
             "alignment": "left",
             "segments": [
                 {
+                    "type": "text",
                     "style": "plain",
-                    "template": "{{ if .Root }}<#ea868f>{{else}}<#906cff>{{end}}\u2570\u2500\u2771</>  ",
-                    "type": "text"
+                    "alias": "ConnectorEnd",
+                    "foreground_templates": [
+                        "{{ if .Root }}p:red{{ end }}",
+                        "{{ if not .Root }}p:purple{{end }}"
+                    ],
+                    "template": "{{ .Var.Connector.End }}  "
                 }
             ]
         }
     ],
+    "secondary_prompt": {
+        "foreground": "p:purple",
+        "template": "\u2771 "
+    },
     "valid_line": {
         "style": "plain",
         "template": "<#3ec669>\u2771 </>"

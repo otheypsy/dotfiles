@@ -37,6 +37,7 @@
 # Exclude .NET assemblies from source
 *.dll
 
+
 # Zsh compiled script + zrecompile backup
 *.zwc
 *.zwc.old
@@ -125,5 +126,21 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+
+#############
+#### MPV ####
+#############
+
+mpv/cache
+mpv/inactive
+mpv/playlists
+mpv/screenshots
+!mpv/scripts/display-info.dll
+*.m3u
+*.mp4
+*.mpv
+*.jpeg
+*.jpg
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,git,powershell,visualstudiocode,zsh
