@@ -1,50 +1,48 @@
 {
     "[html]": {
-        "editor.defaultFoldingRangeProvider": "esbenp.prettier-vscode",
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
         "prettier.bracketSameLine": true,
         "prettier.singleAttributePerLine": true
     },
-    "[javascript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "[javascriptreact]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "[json]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
     "[lua]": {
-        "editor.defaultFormatter": "sumneko.lua",
-        "editor.formatOnSave": true
+        "editor.defaultFormatter": "sumneko.lua"
+    },
+    "[markdown]": {
+        "editor.unicodeHighlight.ambiguousCharacters": false,
+        "editor.unicodeHighlight.invisibleCharacters": false
+    },
+    "[powershell]": {
+        "files.encoding": "utf8bom",
+        "editor.defaultFormatter": "ms-vscode.powershell"
+    },
+    "[shellscript]": {
+        "editor.defaultFormatter": "foxundermoon.shell-format"
+    },
+    "[properties]": {
+        "editor.wordWrap": "off"
     },
     "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter",
-        "editor.formatOnSave": true
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "explicit",
+            "source.organizeImports": "explicit"
+        },
+        "editor.defaultFormatter": "charliermarsh.ruff"
     },
-    "[typescript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "[yaml]": {
+        "prettier.tabWidth": 2
     },
-    "[typescriptreact]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "black-formatter.args": ["--line-length=120"],
-    "black-formatter.showNotifications": "onWarning",
-    "chat.agent.enabled": false,
-    "chat.checkpoints.enabled": false,
-    "chat.checkpoints.showFileChanges": false,
-    "chat.disableAIFeatures": true,
-    "chat.editor.fontSize": 15,
-    "chat.editor.wordWrap": "on",
-    "chat.fontSize": 15,
+    "chat.agent.enabled": true,
+    "chat.fontSize": 14,
+    "chat.mcp.gallery.enabled": true,
+    "chat.viewSessions.orientation": "stacked",
+    "cSpell.autoFormatConfigFile": true,
     "cSpell.customDictionaries": {
+        "custom": true,
         "custom-dictionary": {
             "addWords": true,
             "name": "custom-dictionary",
             "path": "~/AppData/Roaming/Code/User/cspell-custom-dictionary.txt",
-            "scope": "workspace"
-        },
-        "custom": true
+            "scope": "user"
+        }
     },
     "cSpell.ignorePaths": [
         "node_modules",
@@ -121,33 +119,54 @@
             "languageId": "scss"
         }
     ],
+    "cSpell.useLocallyInstalledCSpellDictionaries": false,
+    "css.validate": false,
+    "csv-preview.hasHeaders": false,
+    "csv-preview.lineNumbers": "source",
+    "csv-preview.resizeColumns": "all",
     "debug.breakpointsView.presentation": "tree",
-    "debug.console.fontFamily": "'SpaceMono Nerd Font', 'MesloLGM Nerd Font Mono'",
-    "debug.console.fontSize": 15,
+    "debug.console.fontFamily": "'SpaceMono Nerd Font Propo', 'MesloLGM Nerd Font Mono'",
+    "debug.console.historySuggestions": false,
+    "debug.openDebug": "openOnDebugBreak",
+    "editor.acceptSuggestionOnEnter": "smart",
     "editor.allowVariableFonts": false,
     "editor.codeActionsOnSave": {
-        "source.organizeImports": "always"
+        "source.fixAll.shellcheck": "explicit",
+        "source.organizeImports": "explicit",
+        "source.sortImports": "explicit"
     },
     "editor.codeLensFontSize": 14,
     "editor.colorDecoratorsLimit": 2000,
-    "editor.defaultFoldingRangeProvider": "esbenp.prettier-vscode",
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.definitionLinkOpensInPeek": true,
     "editor.detectIndentation": false,
-    "editor.fontFamily": "'Google Sans Code', 'Space Mono', 'Source Code Pro', monospace",
+    "editor.fontFamily": "'Space Mono', 'Source Code Pro', monospace",
     "editor.fontLigatures": false,
-    "editor.fontSize": 15,
+    "editor.glyphMargin": false,
     "editor.indentSize": "tabSize",
     "editor.inlayHints.fontSize": 14,
+    "editor.inlineSuggest.edits.renderSideBySide": "never",
+    "editor.inlineSuggest.edits.showCollapsed": true,
     "editor.language.brackets": [],
+    "editor.renderControlCharacters": true,
     "editor.smoothScrolling": false,
-    "editor.wordWrap": "bounded",
-    "editor.wordWrapColumn": 120,
+    "editor.tabCompletion": "off",
+    "editor.unicodeHighlight.allowedCharacters": {
+        "‹": true,
+        "›": true
+    },
+    "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?",
+    "editor.wordWrap": "on",
+    "editor.wordWrapColumn": 80,
     "emmet.includeLanguages": {
         "javascript": "javascriptreact",
         "typescript": "typescriptreact"
     },
     "eslint.bulkSuppression.enable": true,
+    "eslint.codeActionsOnSave.mode": "problems",
+    "eslint.codeActionsOnSave.options": {
+        "fixAll": false,
+        "sortOrder": "position"
+    },
     "eslint.ignoreUntitled": true,
     "eslint.onIgnoredFiles": "warn",
     "eslint.probe": [
@@ -155,19 +174,31 @@
         "javascriptreact",
         "typescript",
         "typescriptreact",
-        "html",
-        "mdx",
-        "markdown",
-        "json",
-        "jsonc",
         "css",
-        "graphql"
+        "scss",
+        "sass",
+        "html",
+        "graphql",
+        "json",
+        "json5",
+        "jsonc",
+        "markdown",
+        "mdx"
     ],
     "eslint.trace.server": "off",
     "eslint.useESLintClass": true,
-    "eslint.useFlatConfig": true,
-    "eslint.validate": ["javascript", "typescript", "javascriptreact", "typescriptreact", "json"],
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact",
+        "css",
+        "scss",
+        "sass",
+        "html"
+    ],
     "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.expand": true,
     "explorer.fileNesting.patterns": {
         ".editorconfig": "eslint.*.ts, stylelint.*.ts, prettier.*.ts",
         "*.db": "${capture}.${extname}-*",
@@ -178,22 +209,27 @@
         "*.sdb": "${capture}.${extname}-*",
         "*.sqlite": "${capture}.${extname}-*",
         "*.sqlite3": "${capture}.${extname}-*",
-        "*.ts": "${capture}.d.ts, ${capture}.js, ${capture}*.scss, ${capture}*.css",
-        "*.tsx": "${capture}.ts, ${capture}.js, ${capture}*.scss, ${capture}*.css",
-        "package.json": "package-lock.json, yarn.lock, .yarnrc.yml, pnpm-lock.yaml, bun.lockb, bun.lock",
-        "tsconfig.json": "tsconfig*json, *.d.ts"
+        "*.ts": "${capture}.d.ts, ${capture}.js, ${capture}.scss, ${capture}.sass, ${capture}.css",
+        "*.tsx": "${capture}.ts, ${capture}.d.ts, ${capture}.js, ${capture}.scss, ${capture}.sass, ${capture}.css",
+        "package.json": "yarn.lock, .yarnrc.yml, tsconfig.json",
+        "README*": "AUTHORS, UNLICENSE",
+        "vite.config.ts": "vite.*.ts, index.html, "
     },
     "explorer.incrementalNaming": "smart",
-    "explorer.openEditors.minVisible": 20,
+    "explorer.openEditors.minVisible": 15,
+    "explorer.openEditors.sortOrder": "alphabetical",
     "explorer.openEditors.visible": 20,
     "explorer.sortOrder": "foldersNestsFiles",
     "explorer.sortOrderLexicographicOptions": "unicode",
     "files.autoSave": "onWindowChange",
+    "files.defaultLanguage": "",
     "files.eol": "\n",
     "files.insertFinalNewline": true,
     "files.trimFinalNewlines": true,
+    "files.trimTrailingWhitespace": true,
     "git.addAICoAuthor": "off",
     "git.autoStash": true,
+    "git.blame.ignoreWhitespace": true,
     "git.detectWorktrees": true,
     "git.inputValidation": true,
     "git.showActionButton": {
@@ -203,15 +239,20 @@
     "git.showPushSuccessNotification": true,
     "git.terminalGitEditor": true,
     "git.verboseCommit": true,
+    "github.copilot.chat.claudeOpus5Prompt.enabled": true,
+    "github.copilot.chat.claudeSonnet5Prompt.enabled": true,
+    "github.copilot.enable": {
+        "*": false
+    },
+    "html.format.enable": false,
     "html.format.indentHandlebars": true,
     "html.format.indentInnerHtml": true,
-    "html.format.wrapLineLength": 120,
+    "html.format.wrapLineLength": 80,
     "html.suggest.hideEndTagSuggestions": true,
-    "inlineChat.askInChat": false,
     "ipynb.experimental.serialization": false,
     "ipynb.pasteImagesAsAttachments.enabled": false,
-    "js/ts.tsserver.experimental.enableProjectDiagnostics": true,
-    "js/ts.updateImportsOnFileMove.enabled": "always",
+    "js/ts.format.enabled": false,
+    "json.format.enable": false,
     "json.schemaDownload.trustedDomains": {
         "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json": true,
         "https://www.schemastore.org/": true
@@ -222,49 +263,56 @@
             "url": "https://www.schemastore.org/package.json"
         }
     ],
-    "Lua.format.defaultConfig": {
-        "indent_size": "4",
-        "indent_style": "space"
-    },
-    "Lua.format.enable": true,
+    "less.validate": false,
+    "Lua.codeLens.enable": true,
+    "Lua.diagnostics.libraryFiles": "Enable",
+    "markdown.preview.doubleClickToSwitchToEditor": true,
     "markdown.preview.fontFamily": "'Google Sans', 'Open Sans', system-ui, sans-serif",
-    "material-icon-theme.activeIconPack": "react",
-    "material-icon-theme.enableLogging": true,
+    "markdown.validate.enabled": true,
+    "notebook.formatOnSave.enabled": true,
     "npm.packageManager": "yarn",
     "npm.scriptRunner": "yarn",
-    "oneDarkPro.editorTheme": "Shadow",
+    "oneDarkPro.editorTheme": "One Dark Pro Darker",
+    "oneDarkPro.vivid": false,
+    "powershell.buttons.showPanelMovementButtons": false,
+    "powershell.codeFolding.showLastLine": true,
+    "powershell.codeFormatting.pipelineIndentationStyle": "IncreaseIndentationAfterEveryPipeline",
+    "powershell.codeFormatting.preset": "Stroustrup",
+    "powershell.codeFormatting.trimWhitespaceAroundPipe": true,
+    "powershell.codeFormatting.useConstantStrings": true,
+    "powershell.codeFormatting.useCorrectCasing": true,
+    "powershell.integratedConsole.focusConsoleOnExecute": true,
+    "powershell.integratedConsole.showOnStartup": false,
+    "powershell.sideBar.CommandExplorerVisibility": false,
     "prettier.bracketSameLine": true,
     "prettier.ignorePath": "",
-    "prettier.printWidth": 120,
+    "prettier.printWidth": 80,
     "prettier.semi": false,
     "prettier.singleAttributePerLine": true,
     "prettier.singleQuote": true,
     "prettier.tabWidth": 4,
-    "prettier.trailingComma": "none",
-    "python.analysis.autoFormatStrings": true,
-    "python.analysis.autoImportCompletions": true,
-    "python.analysis.completeFunctionParens": true,
-    "python.analysis.diagnosticMode": "workspace",
-    "python.analysis.enablePytestSupport": false,
-    "python.analysis.typeCheckingMode": "strict",
-    "scm.inputFontSize": 15,
+    "prettier.trailingComma": "es5",
+    "problems.sortOrder": "position",
+    "scm.inputFontSize": 14,
+    "scss.validate": false,
     "stylelint.lintFiles.glob": "**/*.{css,scss,jsx,tsx}",
     "stylelint.packageManager": "yarn",
     "stylelint.reportDescriptionlessDisables": true,
     "stylelint.reportInvalidScopeDisables": true,
     "stylelint.reportNeedlessDisables": true,
     "stylelint.snippet": [],
-    "stylelint.validate": ["css", "sass"],
+    "stylelint.validate": ["css", "scss", "sass"],
     "telemetry.telemetryLevel": "off",
     "terminal.external.windowsExec": "wt",
     "terminal.integrated.confirmOnExit": "always",
     "terminal.integrated.cursorBlinking": true,
     "terminal.integrated.cursorStyle": "underline",
-    "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "terminal.integrated.customGlyphs": false,
     "terminal.integrated.enableVisualBell": true,
     "terminal.integrated.env.windows": {},
-    "terminal.integrated.fontFamily": "'SpaceMono Nerd Font', 'MesloLGM Nerd Font Mono'",
+    "terminal.integrated.fontFamily": "'SpaceMono Nerd Font Propo', 'MesloLGM Nerd Font Mono'",
     "terminal.integrated.fontLigatures.enabled": true,
+    "terminal.integrated.fontSize": 13,
     "terminal.integrated.fontWeight": "normal",
     "terminal.integrated.fontWeightBold": "normal",
     "terminal.integrated.lineHeight": 1.1,
@@ -272,7 +320,10 @@
         "Command Prompt": {
             "args": [],
             "icon": "terminal-cmd",
-            "path": ["${env:windir}\\Sysnative\\cmd.exe", "${env:windir}\\System32\\cmd.exe"]
+            "path": [
+                "${env:windir}\\Sysnative\\cmd.exe",
+                "${env:windir}\\System32\\cmd.exe"
+            ]
         },
         "Git Bash": {
             "icon": "terminal-git-bash",
@@ -284,6 +335,7 @@
             "path": "pwsh.exe"
         }
     },
+    "terminal.integrated.rescaleOverlappingGlyphs": false,
     "terminal.integrated.shellIntegration.enabled": true,
     "terminal.integrated.smoothScrolling": false,
     "terminal.integrated.stickyScroll.enabled": false,
@@ -291,11 +343,17 @@
     "terminal.integrated.suggest.providers": {
         "lsp": false
     },
+    "terminal.integrated.suggest.quickSuggestions": {
+        "arguments": "on",
+        "commands": "on",
+        "unknown": "on"
+    },
     "terminal.integrated.suggest.suggestOnTriggerCharacters": true,
     "terminal.integrated.tabs.defaultColor": "terminal.ansiBlack",
     "wgsl.validateOnType": true,
     "window.systemColorTheme": "dark",
     "window.zoomLevel": 1,
+    "workbench.activityBar.location": "top",
     "workbench.browser.searchEngine": "google",
     "workbench.colorCustomizations": {
         "activityBarBadge.background": "#FFA000",
@@ -316,36 +374,34 @@
         "settings.headerForeground": "#FFA000",
         "settings.modifiedItemForeground": "#FFA000",
         "settings.modifiedItemIndicator": "#FFA000",
+        "sideBarSectionHeader.foreground": "#E06C75",
         "tab.activeBorder": "#FFA000",
         "textLink.foreground": "#FFA000"
+    },
+    "workbench.colorTheme": "One Dark Pro Darker",
+    "workbench.editor.decorations.badges": false,
+    "workbench.editor.revealIfOpen": true,
+    "workbench.editorAssociations": {
+        "*.{jpg,jpe,jpeg,png,bmp,gif,ico,webp,avif,svg}": "default",
+        "*.copilotmd": "vscode.markdown.preview.editor",
+        "*.md": "vscode.markdown.editor"
     },
     "workbench.experimental.modernUI": true,
     "workbench.externalBrowser": "chrome",
     "workbench.preferredDarkColorTheme": "One Dark Pro Darker",
     "workbench.preferredHighContrastColorTheme": "One Dark Pro Darker",
     "workbench.preferredHighContrastLightColorTheme": "One Dark Pro Darker",
-    "workbench.preferredLightColorTheme": "One Dark Pro Night Flat",
+    "workbench.preferredLightColorTheme": "One Dark Pro Darker",
     "workbench.secondarySideBar.defaultVisibility": "hidden",
     "workbench.tree.indent": 25,
-    "workbench.colorTheme": "One Dark Pro Darker",
-    "problems.sortOrder": "position",
-    "workbench.editor.revealIfOpen": true,
-    "cSpell.useLocallyInstalledCSpellDictionaries": false,
-    "eslint.codeActionsOnSave.options": {
-        "fixAll": false
+    "eslint.codeAction.disableRuleComment": {
+        "enable": false
     },
-    "js/ts.format.indentSwitchCase": false,
-    "js/ts.format.insertSpaceAfterCommaDelimiter": false,
-    "js/ts.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
-    "js/ts.format.enabled": false,
-    "js/ts.preferences.renameMatchingJsxTags": false,
-    "js/ts.preferences.useAliasesForRenames": false,
-    "js/ts.format.insertSpaceAfterKeywordsInControlFlowStatements": false,
-    "js/ts.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
-    "js/ts.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": false,
-    "js/ts.format.insertSpaceAfterSemicolonInForStatements": false,
-    "js/ts.format.insertSpaceBeforeAndAfterBinaryOperators": false,
-    "eslint.codeActionsOnSave.mode": "problems",
-    "files.refactoring.autoSave": false,
-    "editor.formatOnSave": true
+    "eslint.useRealpaths": true,
+    "ruff.lineLength": 80,
+    "ruff.importStrategy": "useBundled",
+    "editor.formatOnSave": true,
+    "Lua.type.inferParamType": true,
+    "Lua.type.checkTableShape": true,
+    "Lua.runtime.version": "Lua 5.5"
 }
