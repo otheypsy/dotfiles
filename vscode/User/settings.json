@@ -223,7 +223,6 @@
     "explorer.sortOrderLexicographicOptions": "unicode",
     "files.autoSave": "onWindowChange",
     "files.defaultLanguage": "",
-    "files.eol": "\n",
     "files.insertFinalNewline": true,
     "files.trimFinalNewlines": true,
     "files.trimTrailingWhitespace": true,
@@ -274,7 +273,7 @@
     "npm.scriptRunner": "yarn",
     "oneDarkPro.editorTheme": "One Dark Pro Darker",
     "oneDarkPro.vivid": false,
-    "powershell.buttons.showPanelMovementButtons": false,
+    "powershell.buttons.showPanelMovementButtons": true,
     "powershell.codeFolding.showLastLine": true,
     "powershell.codeFormatting.pipelineIndentationStyle": "IncreaseIndentationAfterEveryPipeline",
     "powershell.codeFormatting.preset": "Stroustrup",
@@ -336,10 +335,10 @@
         }
     },
     "terminal.integrated.rescaleOverlappingGlyphs": false,
-    "terminal.integrated.shellIntegration.enabled": true,
+    "terminal.integrated.shellIntegration.enabled": false,
     "terminal.integrated.smoothScrolling": false,
     "terminal.integrated.stickyScroll.enabled": false,
-    "terminal.integrated.suggest.inlineSuggestion": "alwaysOnTopExceptExactMatch",
+    "terminal.integrated.suggest.inlineSuggestion": "off",
     "terminal.integrated.suggest.providers": {
         "lsp": false
     },
@@ -404,5 +403,19 @@
     "Lua.type.inferParamType": true,
     "Lua.type.checkTableShape": true,
     "Lua.runtime.version": "Lua 5.5",
-    "diffEditor.ignoreTrimWhitespace": false
+    "diffEditor.ignoreTrimWhitespace": false,
+    "powershell.codeFormatting.avoidSemicolonsAsLineTerminators": true,
+    "powershell.enableProfileLoading": false,
+    "powershell.integratedConsole.startInBackground": true,
+    "powershell.helpCompletion": "LineComment",
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "powershell.startAsLoginShell.osx": false,
+    "terminal.integrated.shellIntegration.decorationsEnabled": "never",
+    "terminal.integrated.suggest.enabled": false,
+    "terminal.integrated.gpuAcceleration": "off",
+    "chat.upvoteAnimation": "off",
+    "chat.experimental.incrementalRendering.animationStyle": "none",
+    "workbench.reduceMotion": "on",
+    "chat.agent.codeBlockProgress": false,
+    "chat.progressBorder.enabled": false
 }

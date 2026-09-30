@@ -25,48 +25,35 @@
 #### Terminal ####
 ##################
 
-# Exclude packaged modules
-*.zip
+# Powershell
+PowerShell/Modules/*
+PowerShell/Scripts/*
+!PowerShell/Scripts/Custom
+!PowerShell/Modules/Custom
 
-# Themes
-.oh-my-zsh/*
-!.oh-my-zsh/custom/themes/otheypsy.zsh-theme
+# OMP Themes
 .oh-my-posh/*
 !.oh-my-posh/themes/otheypsy.omp.json
 
-# Exclude .NET assemblies from source
-*.dll
+# OMZ Themes
+.oh-my-zsh/*
+!.oh-my-zsh/custom/themes/otheypsy.zsh-theme
 
-
-# Zsh compiled script + zrecompile backup
-*.zwc
-*.zwc.old
-
-# Zsh completion-optimization dumpfile
-*zcompdump*
-
-# Zsh history
-.zsh_history
-
-# Zsh sessions
-.zsh_sessions
-
-# Zsh zcalc history
-.zcalc_history
-
-# A popular plugin manager's files
-._zinit
-.zinit_lstupd
-
-# zdharma/zshelldoc tool's files
-zsdoc/data
-
-# robbyrussell/oh-my-zsh/plugins/per-directory-history plugin's files
-# (when set-up to store the history in the local directory)
+# Robby Russell OMZ plugin history files
 .directory_history
 
-# MichaelAquilina/zsh-autoswitch-virtualenv plugin's files
-# (for Zsh plugins using Python)
+# Zsh Generated Files
+.zsh_history
+.zsh_sessions
+.zcalc_history
+._zinit
+.zinit_lstupd
+zsdoc/data
+*.zwc
+*.zwc.old
+*zcompdump*
+
+# Python Virtual Environment
 .venv
 
 # Zunit tests' output
@@ -79,7 +66,7 @@ zsdoc/data
 ##########################
 
 # Core workspace files
-.vscode
+.vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -101,6 +88,12 @@ logs
 #################
 #### Windows ####
 #################
+
+# Exclude packaged modules
+*.zip
+
+# Exclude .NET assemblies from source
+*.dll
 
 # Windows thumbnail cache files
 Thumbs.db
@@ -138,6 +131,7 @@ mpv/playlists
 mpv/screenshots
 !mpv/scripts/display-info.dll
 *.m3u
+*.m3u8
 *.mp4
 *.mpv
 *.jpeg
