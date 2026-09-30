@@ -74,7 +74,7 @@
                     ],
                     "options": {
                         "threshold": 500,
-                        "style": "austin",
+                        "style": "roundrock",
                         "always_enabled": true
                     },
                     "template": "{{ if eq .Code 0 }}\udb86\uded1  {{ else }}\udb86\udee7  {{ end }}{{ .FormattedMs }}"
